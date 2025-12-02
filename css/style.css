@@ -117,39 +117,6 @@
   --z-cursor: 10000;
 }
 
-/* ============================================================================
-   LIGHT THEME (when data-theme="light")
-   ============================================================================ */
-
-[data-theme="light"],
-.light-theme {
-  --bg-900: #f8fafc;
-  --bg-800: #f1f5f9;
-  --bg-700: #e2e8f0;
-  --card: rgba(0, 0, 0, 0.03);
-  --glass: rgba(0, 0, 0, 0.03);
-  --glass-strong: rgba(0, 0, 0, 0.06);
-  
-  --text-primary: #0f1724;
-  --text-secondary: #475569;
-  --text-muted: #64748b;
-  
-  /* Keep accent colors vibrant */
-  --accent-1: #7b61ff;
-  --accent-2: #0ea5e9;
-  --accent-3: #06b6d4;
-  
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 6px 24px rgba(0, 0, 0, 0.15);
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.2);
-  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.25);
-  --shadow-glow: 0 8px 24px rgba(123, 97, 255, 0.2);
-}
-
-/* Smooth theme transition */
-* {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-}
 
 /* ============================================================================
    RESET & BASE STYLES
@@ -1304,78 +1271,41 @@ p {
    THEME TOGGLE BUTTON
    ============================================================================ */
 
-.theme-toggle {
-  background: var(--glass);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: var(--radius-md);
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--font-size-lg);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-}
-
-.theme-toggle:hover {
-  background: var(--glass-strong);
-  transform: scale(1.05);
-}
-
-.theme-toggle:focus-visible {
-  outline: 2px solid var(--accent-1);
-  outline-offset: 2px;
-}
 
 /* ============================================================================
-   CUSTOM CURSOR
+   SUBTLE CURSOR
    ============================================================================ */
 
-.custom-cursor,
-.custom-cursor-follower {
+.subtle-cursor {
   position: fixed;
   pointer-events: none;
   z-index: var(--z-cursor);
-  mix-blend-mode: difference;
-  transition: transform 0.1s ease-out, opacity 0.3s ease;
-}
-
-.custom-cursor {
-  width: 8px;
-  height: 8px;
+  width: 4px;
+  height: 4px;
   background: var(--accent-2);
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  opacity: 0;
+  opacity: 0.3;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+  will-change: transform, opacity;
 }
 
-.custom-cursor-follower {
-  width: 32px;
-  height: 32px;
-  border: 2px solid var(--accent-2);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  transition: transform 0.15s ease-out, width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+.subtle-cursor.interactive {
+  width: 6px;
+  height: 6px;
+  opacity: 1;
+  box-shadow: 0 0 8px var(--accent-2);
 }
 
-.custom-cursor.hover,
-.custom-cursor-follower.hover {
-  width: 48px;
-  height: 48px;
-  border-width: 3px;
+.subtle-cursor.clicked {
+  transform: translate(-50%, -50%) scale(1.5);
+  opacity: 0.8;
 }
 
 /* Hide on touch devices */
 @media (pointer: coarse) {
-  .custom-cursor,
-  .custom-cursor-follower {
+  .subtle-cursor {
     display: none;
-  }
-  
-  body {
-    cursor: auto !important;
   }
 }
 

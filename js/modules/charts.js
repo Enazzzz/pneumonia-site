@@ -83,13 +83,15 @@
 
   /**
    * Animated Donut Chart
+   * Slower, more graceful rotation with higher contrast colors
    */
   function createDonutChart(canvas, data, options = {}) {
     const ctx = canvas.getContext('2d');
     const {
-      colors = ['#7be7ff', '#7b61ff', '#8dd3ff', '#9be7ff'],
+      // Higher contrast colors for dark background
+      colors = ['#7be7ff', '#ff6b9d', '#a78bfa', '#34d399'],
       innerRadius = 0.6,
-      animationDuration = 1200
+      animationDuration = 2000 // Slower animation
     } = options;
 
     const centerX = canvas.width / 2;
@@ -99,21 +101,37 @@
     const total = data.reduce((sum, item) => sum + item.value, 0);
     let currentAngle = -Math.PI / 2;
     let animationProgress = 0;
+    let rotationAngle = 0; // Continuous slow rotation
     const startTime = performance.now();
+    const rotationSpeed = 0.0003; // Very slow, romantic pace
+
+    function easeInOutCubic(t) {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       const currentTime = performance.now();
-      animationProgress = Math.min(1, (currentTime - startTime) / animationDuration);
+      const elapsed = currentTime - startTime;
+      animationProgress = Math.min(1, elapsed / animationDuration);
+      
+      // Continuous slow rotation (romantic feel)
+      rotationAngle += rotationSpeed;
+      if (rotationAngle > Math.PI * 2) rotationAngle -= Math.PI * 2;
 
+      // Apply easing to animation progress
+      const easedProgress = easeInOutCubic(animationProgress);
+      
+      let sliceStartAngle = -Math.PI / 2 + rotationAngle;
+      
       data.forEach((item, index) => {
-        const sliceAngle = (item.value / total) * 2 * Math.PI * animationProgress;
+        const sliceAngle = (item.value / total) * 2 * Math.PI * easedProgress;
         
-        // Draw slice
+        // Draw slice with higher contrast
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
-        ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+        ctx.arc(centerX, centerY, radius, sliceStartAngle, sliceStartAngle + sliceAngle);
         ctx.closePath();
         ctx.fillStyle = colors[index % colors.length];
         ctx.fill();
@@ -121,28 +139,67 @@
         // Draw inner circle for donut effect
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
-        ctx.arc(centerX, centerY, radius * innerRadius, currentAngle, currentAngle + sliceAngle);
+        ctx.arc(centerX, centerY, radius * innerRadius, sliceStartAngle, sliceStartAngle + sliceAngle);
         ctx.closePath();
         ctx.fillStyle = '#0f1724';
         ctx.fill();
 
-        // Draw label
-        if (animationProgress > 0.7) {
-          const labelAngle = currentAngle + sliceAngle / 2;
+        // Draw label with matching color
+        if (easedProgress > 0.7) {
+          const labelAngle = sliceStartAngle + sliceAngle / 2;
           const labelX = centerX + Math.cos(labelAngle) * (radius * 0.8);
           const labelY = centerY + Math.sin(labelAngle) * (radius * 0.8);
           
-          ctx.fillStyle = '#E6EEF3';
+          ctx.fillStyle = colors[index % colors.length];
           ctx.font = 'bold 12px Inter';
           ctx.textAlign = 'center';
           ctx.fillText(item.label, labelX, labelY);
         }
 
-        currentAngle += sliceAngle;
+        sliceStartAngle += sliceAngle;
       });
 
+      // Continue rotation even after animation completes
       if (animationProgress < 1) {
         requestAnimationFrame(draw);
+      } else {
+        // Keep rotating slowly
+        requestAnimationFrame(() => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          rotationAngle += rotationSpeed;
+          if (rotationAngle > Math.PI * 2) rotationAngle -= Math.PI * 2;
+          
+          let sliceStartAngle = -Math.PI / 2 + rotationAngle;
+          data.forEach((item, index) => {
+            const sliceAngle = (item.value / total) * 2 * Math.PI;
+            
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.arc(centerX, centerY, radius, sliceStartAngle, sliceStartAngle + sliceAngle);
+            ctx.closePath();
+            ctx.fillStyle = colors[index % colors.length];
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.arc(centerX, centerY, radius * innerRadius, sliceStartAngle, sliceStartAngle + sliceAngle);
+            ctx.closePath();
+            ctx.fillStyle = '#0f1724';
+            ctx.fill();
+
+            const labelAngle = sliceStartAngle + sliceAngle / 2;
+            const labelX = centerX + Math.cos(labelAngle) * (radius * 0.8);
+            const labelY = centerY + Math.sin(labelAngle) * (radius * 0.8);
+            
+            ctx.fillStyle = colors[index % colors.length];
+            ctx.font = 'bold 12px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText(item.label, labelX, labelY);
+
+            sliceStartAngle += sliceAngle;
+          });
+          requestAnimationFrame(arguments.callee);
+        });
       }
     }
 
@@ -164,14 +221,27 @@
       ScrollTrigger.create({
         trigger: transmissionCanvas,
         start: 'top 80%',
-        once: true,
+        once: false, // Make repeatable
         onEnter: () => {
           createDonutChart(transmissionCanvas, [
             { label: 'Droplet', value: 65 },
             { label: 'Aspiration', value: 20 },
             { label: 'Other', value: 15 }
           ], {
-            colors: ['#7be7ff', '#7b61ff', '#8dd3ff']
+            colors: ['#7be7ff', '#ff6b9d', '#a78bfa'] // Higher contrast
+          });
+        },
+        onLeave: () => {
+          // Reset when scrolled away
+        },
+        onEnterBack: () => {
+          // Replay when scrolled back
+          createDonutChart(transmissionCanvas, [
+            { label: 'Droplet', value: 65 },
+            { label: 'Aspiration', value: 20 },
+            { label: 'Other', value: 15 }
+          ], {
+            colors: ['#7be7ff', '#ff6b9d', '#a78bfa']
           });
         }
       });
@@ -186,14 +256,25 @@
       ScrollTrigger.create({
         trigger: riskChartCanvas,
         start: 'top 80%',
-        once: true,
+        once: false, // Make repeatable
         onEnter: () => {
           createBarChart(riskChartCanvas, [
             { label: 'Children', value: 85 },
             { label: 'Elderly', value: 78 },
             { label: 'Immunocompromised', value: 60 }
           ], {
-            colors: ['#7be7ff', '#7b61ff', '#8dd3ff'],
+            colors: ['#7be7ff', '#ff6b9d', '#a78bfa'], // Higher contrast
+            maxValue: 100
+          });
+        },
+        onEnterBack: () => {
+          // Replay when scrolled back
+          createBarChart(riskChartCanvas, [
+            { label: 'Children', value: 85 },
+            { label: 'Elderly', value: 78 },
+            { label: 'Immunocompromised', value: 60 }
+          ], {
+            colors: ['#7be7ff', '#ff6b9d', '#a78bfa'],
             maxValue: 100
           });
         }

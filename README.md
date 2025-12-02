@@ -15,7 +15,7 @@ This is a **zero-build, static site** that can be deployed directly to Vercel (o
 - ♿ **Fully accessible** — WCAG AA compliant, keyboard navigation, screen reader support
 - 📱 **Responsive** — Mobile-first design that works on all devices
 - 🚀 **Performance optimized** — Fast load times, lazy loading, efficient animations
-- 🎓 **Educational** — Interactive quiz, breathing demo, and clear content structure
+- 🎓 **Educational** — Interactive quiz, animated charts, timeline, and clear content structure
 
 ---
 
@@ -29,10 +29,14 @@ pneumonia-site/
 ├── js/
 │   ├── main.js            # Main initialization script
 │   └── modules/
-│       ├── particles.js   # Particle background system
+│       ├── particles-global.js  # Page-spanning scroll-reactive particle system
 │       ├── parallax.js    # Mouse parallax effects
-│       ├── breathing.js   # 4-7-8 breathing exercise demo
-│       └── quiz.js        # Interactive quiz functionality
+│       ├── cursor.js      # Subtle cursor with interactivity indication
+│       ├── charts.js      # Interactive charts (bar, donut)
+│       ├── timeline.js    # Animated timeline component
+│       ├── quiz.js        # Interactive quiz functionality
+│       ├── copy-protection.js  # Optional text selection protection
+│       └── nav-highlights.js   # Scroll-based navigation highlighting
 ├── assets/
 │   ├── fonts/             # Local font files (download Inter font)
 │   │   └── README.md      # Font download instructions
@@ -410,11 +414,12 @@ The project includes `.editorconfig` for consistent formatting across editors. M
 - **Performance**: Close other browser tabs
 - **Browser**: Try Chrome or Firefox (best performance)
 
-### Breathing Demo Not Starting
+### Particles Not Visible
 
-- **Check audio**: Browser may block audio until user interaction
-- **Console errors**: Check for AudioContext errors
-- **Mute button**: Ensure audio isn't muted
+- **Check canvas**: Ensure `#particle-bg` element exists
+- **Reduced motion**: Particles may be static if motion is reduced
+- **Performance**: Lower-end devices may show fewer particles
+- **Demo override**: Use `?demo=1` to enable full motion
 
 ### Mobile Menu Not Working
 
@@ -425,11 +430,18 @@ The project includes `.editorconfig` for consistent formatting across editors. M
 
 ## 📚 Libraries & Dependencies
 
-### Included (CDN)
+### Included (Local Files)
 
-- **GSAP 3.13.0** — Animation library
-- **ScrollTrigger** — GSAP plugin for scroll-based animations
-- **Inter Font** — Google Fonts (preloaded)
+- **GSAP 3.13.0** — Animation library (local in `js/libs/`)
+- **ScrollTrigger** — GSAP plugin (local in `js/libs/`)
+- **ScrollToPlugin** — GSAP plugin (local in `js/libs/`)
+- **Inter Font** — Google Fonts (CDN - can be downloaded locally to `assets/fonts/`)
+
+**Note**: Fonts are currently loaded from Google Fonts CDN. To make fully local:
+1. Download Inter font from [rsms.me/inter](https://rsms.me/inter/)
+2. Place files in `assets/fonts/`
+3. Update `@font-face` declarations in `css/style.css`
+4. Remove Google Fonts links from `index.html`
 
 ### No Build Tools Required
 
@@ -437,16 +449,103 @@ This is a **zero-dependency** static site. Everything runs in the browser.
 
 ---
 
-## 🔄 Future Enhancements
+## 🎛️ Advanced Features & Configuration
 
-Potential improvements (not implemented):
+### Demo Override Mode
 
-- [ ] Dark/Light theme toggle
-- [ ] Chart.js integration for statistics
-- [ ] More interactive visualizations
-- [ ] Sound effects toggle (currently muted by default)
-- [ ] Print stylesheet improvements
-- [ ] PWA support (service worker, manifest)
+For presentations or demos, you can temporarily enable full motion even if `prefers-reduced-motion` is set:
+
+**Method 1: URL Parameter**
+```
+https://yoursite.com/?demo=1
+```
+
+**Method 2: LocalStorage**
+```javascript
+localStorage.setItem('demo-full-motion', 'true');
+// Reload page
+```
+
+**To Disable:**
+```javascript
+localStorage.removeItem('demo-full-motion');
+// Reload page
+```
+
+### Copy Protection (Text Selection)
+
+To disable text selection and copy operations:
+
+**Method 1: URL Parameter**
+```
+https://yoursite.com/?nocopy=1
+```
+
+**Method 2: LocalStorage**
+```javascript
+localStorage.setItem('preventCopy', 'true');
+// Reload page
+```
+
+**To Re-enable:**
+```javascript
+localStorage.removeItem('preventCopy');
+// Or call:
+window.disableCopyProtection();
+// Reload page
+```
+
+**⚠️ Accessibility Note**: Disabling text selection can impact accessibility. Screen readers and assistive technologies may be affected. Only enable for specific use cases (e.g., presentations) and document this clearly.
+
+### Particle Density Adjustment
+
+To adjust particle count, edit `js/modules/particles-global.js`:
+
+```javascript
+// Line ~30
+const particleCount = prefersReduced ? 30 : (isLowPower ? 60 : 120);
+// Change 120 to your desired count (30-200 recommended)
+```
+
+### Card Tilt Sensitivity
+
+To adjust card tilt intensity, edit `js/main.js`:
+
+```javascript
+// In initCardTilt() function
+const rotateX = -y * 8;  // Change 8 to adjust vertical tilt
+const rotateY = x * 10;  // Change 10 to adjust horizontal tilt
+```
+
+### Restoring Light Mode (If Needed)
+
+Light mode has been removed, but you can restore it:
+
+1. Copy light theme CSS from git history:
+   ```css
+   [data-theme="light"] {
+     --bg-900: #f8fafc;
+     /* ... rest of light theme vars ... */
+   }
+   ```
+
+2. Re-add `js/modules/theme-toggle.js` from git history
+
+3. Add theme toggle button back to navigation in `index.html`
+
+4. Update script loading in `index.html`
+
+---
+
+## 🔄 Recent Changes
+
+See `CHANGELOG.md` for detailed list of recent updates including:
+- Subtle cursor system
+- Global particle system
+- Copy protection feature
+- Removed breathing demo
+- Removed light mode
+- Improved animations and consistency
 
 ---
 

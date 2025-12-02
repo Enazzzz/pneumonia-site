@@ -77,7 +77,6 @@
         <p class="lead">A concise, interactive walk-through. Scroll or move your mouse — things react.</p>
         <div class="hero-cta">
           <a href="#symptoms" class="btn" aria-label="Navigate to symptoms section">Explore Symptoms</a>
-          <button id="play-breath" class="btn ghost" aria-label="Start breathing exercise demonstration" aria-pressed="false">Breathing Demo</button>
         </div>
       </div>
 
@@ -86,7 +85,7 @@
         <!-- TODO: Replace with your custom lungs SVG from assets/svg/lungs.svg if you have one -->
         <svg id="lungs" viewBox="0 0 400 400" role="img" aria-label="Animated illustration of human lungs">
           <title>Human Lungs Illustration</title>
-          <desc>An animated SVG illustration of human lungs that demonstrates breathing through subtle scale animations.</desc>
+          <desc>An animated SVG illustration of human lungs.</desc>
           <defs>
             <linearGradient id="g1" x1="0" x2="1">
               <stop offset="0%" stop-color="#8dd3ff"/>
@@ -288,17 +287,6 @@
         </div>
       </div>
 
-      <div class="breathing-demo" role="region" aria-labelledby="breathing-heading">
-        <h3 id="breathing-heading">Breathing Exercise Demo</h3>
-        <div class="breathing-wrap">
-          <div id="breathing-circle" class="breathing-circle" aria-hidden="true" aria-label="Breathing visualization circle"></div>
-          <div class="breathing-controls">
-            <p id="breathing-instruction" class="breathing-instruction" role="status" aria-live="polite">Click "Breathing Demo" in the hero to start the guided 4-7-8 breathing exercise.</p>
-            <button id="breathing-toggle" class="btn ghost breathing-control-btn" aria-label="Toggle breathing exercise" aria-pressed="false">Stop Exercise</button>
-            <button id="breathing-mute" class="btn ghost breathing-control-btn" aria-label="Toggle audio cues" aria-pressed="false">🔊 Mute</button>
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -365,17 +353,16 @@
   <!-- SCRIPTS -->
   <!-- Load order: GSAP libs → Modules → Main initialization -->
   <!-- Modules initialize themselves, then main.js orchestrates everything -->
-  <script src="js/modules/particles.js" defer></script>
+  <script src="js/modules/particles-global.js" defer></script>
   <script src="js/modules/parallax.js" defer></script>
-  <script src="js/modules/breathing.js" defer></script>
   <script src="js/modules/quiz.js" defer></script>
   <script src="js/modules/smooth-scroll.js" defer></script>
   <script src="js/modules/micro-interactions.js" defer></script>
-  <script src="js/modules/theme-toggle.js" defer></script>
   <script src="js/modules/charts.js" defer></script>
   <script src="js/modules/timeline.js" defer></script>
-  <script src="js/modules/custom-cursor.js" defer></script>
+  <script src="js/modules/cursor.js" defer></script>
   <script src="js/modules/nav-highlights.js" defer></script>
+  <script src="js/modules/copy-protection.js" defer></script>
   <!-- Main script loads last to coordinate all features -->
   <script src="js/main.js" defer></script>
 </body>

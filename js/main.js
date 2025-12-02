@@ -6,7 +6,7 @@
  * Features:
  * - Scroll progress bar (real-time updates)
  * - GSAP animations and ScrollTrigger (smooth fade-ins, slides, staggered entrances)
- * - Lungs SVG breathing animation (continuous loop)
+ * - Lungs SVG interactive click animation
  * - Scroll-triggered section reveals
  * - Transmission bar animations (width fill on scroll)
  * - Risk bar animations (width fill on scroll)
@@ -19,10 +19,11 @@
  * Modular features (loaded separately):
  * - js/modules/particles.js (interactive particle background)
  * - js/modules/parallax.js (mouse parallax effects)
- * - js/modules/breathing.js (4-7-8 breathing exercise demo)
  * - js/modules/quiz.js (interactive quiz with feedback)
- * - js/modules/theme-toggle.js (dark/light mode toggle)
+ * - js/modules/cursor.js (subtle cursor with interactivity indication)
+ * - js/modules/particles-global.js (page-spanning scroll-reactive particles)
  * - js/modules/charts.js (interactive charts)
+ * - js/modules/copy-protection.js (optional text selection protection)
  * - js/modules/timeline.js (animated timeline)
  * - js/modules/custom-cursor.js (custom cursor effects)
  * - js/modules/nav-highlights.js (scroll-based nav highlighting)
@@ -262,25 +263,8 @@
       }
 
       // ============================================
-      // LUNGS BREATHING ANIMATION (Continuous Loop)
+      // LUNGS CONTINUOUS ANIMATION (Removed - now only click-based)
       // ============================================
-      const leftLung = qs('.lung.left');
-      const rightLung = qs('.lung.right');
-      if (leftLung && rightLung && !reducedMotion) {
-        log('Setting up lungs breathing animation');
-        gsap.to([leftLung, rightLung], {
-          scaleY: 0.92,
-          yoyo: true,
-          repeat: -1,
-          duration: 3.6,
-          ease: 'sine.inOut',
-          transformOrigin: 'center center',
-          delay: 1.0
-        });
-        log('✅ Lungs breathing animation set up');
-      } else if (!leftLung || !rightLung) {
-        warn('Lung elements not found');
-      }
 
       // ============================================
       // SCROLL-TRIGGERED SECTION REVEALS
@@ -330,8 +314,8 @@
               scrollTrigger: {
                 trigger: cards[0]?.closest('.panel') || cards[0],
                 start: 'top 85%',
-                toggleActions: 'play none none none',
-                once: true
+                toggleActions: 'play none none reverse',
+                once: false // Repeatable
               },
               y: 20,
               opacity: 0,
@@ -356,12 +340,17 @@
           ScrollTrigger.create({
             trigger: bar,
             start: 'top 90%',
-            once: true,
+            once: false, // Repeatable
             onEnter: () => {
               // Set CSS variable for width animation
               bar.style.setProperty('--target-width', `${target}%`);
               bar.classList.add('animated');
               log(`Transmission bar animated to ${target}%`);
+            },
+            onEnterBack: () => {
+              // Replay when scrolled back
+              bar.style.setProperty('--target-width', `${target}%`);
+              bar.classList.add('animated');
             }
           });
         });
@@ -380,7 +369,7 @@
           ScrollTrigger.create({
             trigger: bar,
             start: 'top 90%',
-            once: true,
+            once: false, // Repeatable
             onEnter: () => {
               // Animate width with GSAP for smoothness
               gsap.to(bar, {
@@ -389,6 +378,14 @@
                 ease: 'power2.out'
               });
               log(`Risk bar animated to ${percent}%`);
+            },
+            onEnterBack: () => {
+              // Replay when scrolled back
+              gsap.to(bar, {
+                width: `${percent}%`,
+                duration: 1.2,
+                ease: 'power2.out'
+              });
             }
           });
         });
@@ -409,12 +406,21 @@
    * Adds 3D tilt effect to cards on mouse/pointer movement
    */
   function initCardTilt() {
-    if (prefersReducedMotion()) {
+    // Check for demo override
+    const urlParams = new URLSearchParams(window.location.search);
+    const demoOverride = urlParams.get('demo') === '1' || localStorage.getItem('demo-full-motion') === 'true';
+    const shouldReduce = prefersReducedMotion() && !demoOverride;
+    
+    if (shouldReduce) {
       log('Skipping card tilt (reduced motion)');
       return;
     }
 
-    const tiltCards = qsa('.tilt');
+    // Standardized easing and timing
+    const REVERT_DURATION = 0.6; // seconds
+    const REVERT_EASING = 'power2.out'; // GSAP easing or CSS equivalent
+
+    const tiltCards = qsa('.tilt, .sym-card, .diag-card, .treat-card, .risk-item');
     if (tiltCards.length === 0) {
       warn('No tilt cards found');
       return;
@@ -423,7 +429,19 @@
     log(`Setting up ${tiltCards.length} card tilt effects`);
 
     tiltCards.forEach((card) => {
+      let currentRotation = { x: 0, y: 0 };
+      let isHovered = false;
+      let revertAnimation = null;
+
       card.addEventListener('pointermove', (e) => {
+        if (!isHovered) {
+          isHovered = true;
+          // Cancel any ongoing revert
+          if (revertAnimation && typeof gsap !== 'undefined') {
+            revertAnimation.kill();
+          }
+        }
+
         const rect = card.getBoundingClientRect();
         const x = (e.clientX - rect.left) / rect.width - 0.5;
         const y = (e.clientY - rect.top) / rect.height - 0.5;
@@ -431,14 +449,43 @@
         const rotateX = -y * 8;
         const rotateY = x * 10;
         
-        // Smooth transform with will-change
-        card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(6px)`;
-        card.style.transition = 'transform 0.1s ease-out';
+        currentRotation = { x: rotateX, y: rotateY };
+        
+        // Update transform immediately (no transition while tracking)
+        if (typeof gsap !== 'undefined') {
+          gsap.to(card, {
+            rotationX: rotateX,
+            rotationY: rotateY,
+            z: 6,
+            duration: 0.15,
+            ease: 'power1.out',
+            transformPerspective: 900
+          });
+        } else {
+          card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(6px)`;
+          card.style.transition = 'none';
+        }
       });
 
       card.addEventListener('pointerleave', () => {
-        card.style.transition = 'transform 0.3s ease-out';
-        card.style.transform = '';
+        isHovered = false;
+        
+        // Smooth revert to neutral
+        if (typeof gsap !== 'undefined') {
+          revertAnimation = gsap.to(card, {
+            rotationX: 0,
+            rotationY: 0,
+            z: 0,
+            duration: REVERT_DURATION,
+            ease: REVERT_EASING,
+            transformPerspective: 900
+          });
+        } else {
+          card.style.transition = `transform ${REVERT_DURATION}s cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+          card.style.transform = '';
+        }
+        
+        currentRotation = { x: 0, y: 0 };
       });
     });
 
@@ -590,7 +637,7 @@
 
   /**
    * INTERACTIVE LUNGS CLICK
-   * Adds a pulse effect when clicking on the lungs SVG
+   * Smooth, fluid animation that ends in a deliberate final state
    */
   function initLungsInteraction() {
     const lungs = qs('#lungs');
@@ -604,20 +651,39 @@
 
     log('Setting up interactive lungs');
 
+    // Check for demo override
+    const urlParams = new URLSearchParams(window.location.search);
+    const demoOverride = urlParams.get('demo') === '1' || localStorage.getItem('demo-full-motion') === 'true';
+    const shouldReduce = prefersReducedMotion() && !demoOverride;
+
     lungs.addEventListener('click', () => {
-      if (prefersReducedMotion()) return;
+      if (shouldReduce) return;
 
       if (typeof gsap !== 'undefined') {
-        gsap.fromTo([leftLung, rightLung], 
-          { scale: 1.0 },
-          {
-            scale: 1.12,
-            duration: 0.5,
-            yoyo: true,
-            repeat: 1,
-            ease: 'power1.inOut'
+        // Create smooth timeline that ends in a deliberate state
+        const tl = gsap.timeline({
+          onComplete: () => {
+            // Final state: gentle, persistent slight scale (not reset)
+            gsap.to([leftLung, rightLung], {
+              scale: 1.03,
+              duration: 0.8,
+              ease: 'power2.out'
+            });
           }
-        );
+        });
+
+        // Smooth expansion
+        tl.to([leftLung, rightLung], {
+          scale: 1.15,
+          duration: 0.6,
+          ease: 'power2.out'
+        })
+        // Gentle contraction (not full reset)
+        .to([leftLung, rightLung], {
+          scale: 1.08,
+          duration: 0.5,
+          ease: 'power2.inOut'
+        });
       }
     });
 
@@ -649,15 +715,14 @@
     // Verify all modules are loaded
     setTimeout(() => {
       const modules = {
-        particles: typeof window.initParticles === 'function' || typeof window.particleSystem !== 'undefined',
+        particles: typeof window.particleSystem !== 'undefined',
         parallax: typeof window.initParallax === 'function' || typeof window.parallaxSystem !== 'undefined',
-        breathing: typeof window.initBreathing === 'function' || typeof window.breathingDemo !== 'undefined',
         quiz: typeof window.initQuiz === 'function' || typeof window.quizSystem !== 'undefined',
-        theme: typeof window.themeSystem !== 'undefined',
         charts: typeof window.chartSystem !== 'undefined',
         timeline: typeof window.timelineSystem !== 'undefined',
-        cursor: document.querySelector('.custom-cursor') !== null,
-        navHighlights: true // nav-highlights doesn't expose a global
+        cursor: document.querySelector('.subtle-cursor') !== null,
+        navHighlights: true, // nav-highlights doesn't expose a global
+        copyProtection: typeof window.disableCopyProtection === 'function'
       };
       
       const allLoaded = Object.values(modules).every(loaded => loaded === true);
