@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pneumonia — Project</title>
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+</head>
+<body class="smooth">
+
+  <!-- PROGRESS BAR -->
+  <div id="progress-wrap"><div id="progress"></div></div>
+
+  <!-- NAV -->
+  <nav id="topnav">
+    <div class="brand">Pneumonia Project</div>
+    <ul>
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#symptoms">Symptoms</a></li>
+      <li><a href="#cause">Transmission</a></li>
+      <li><a href="#risk">Risk & Stats</a></li>
+      <li><a href="#diagnosis">Diagnosis</a></li>
+      <li><a href="#treatment">Treatment</a></li>
+      <li><a href="#extras">Extras</a></li>
+      <li><a href="#citations">Citations</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <header id="hero" class="panel">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <h1>Pneumonia</h1>
+        <h2 class="sub">What it is, how it spreads, and how we can prevent it</h2>
+        <p class="lead">A concise, interactive walk-through. Scroll or move your mouse — things react.</p>
+        <div class="hero-cta">
+          <a href="#symptoms" class="btn">Explore Symptoms</a>
+          <button id="play-breath" class="btn ghost">Breathing Demo</button>
+        </div>
+      </div>
+
+      <div class="hero-art">
+        <!-- Lungs SVG that will animate -->
+        <svg id="lungs" viewBox="0 0 400 400" aria-hidden="true">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1">
+              <stop offset="0%" stop-color="#8dd3ff"/>
+              <stop offset="100%" stop-color="#7b61ff"/>
+            </linearGradient>
+            <filter id="goo"><feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
+              <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo"/></filter>
+          </defs>
+
+          <g class="lungs-group" filter="url(#goo)">
+            <ellipse class="lung left" cx="140" cy="200" rx="100" ry="140" fill="url(#g1)"/>
+            <ellipse class="lung right" cx="260" cy="200" rx="100" ry="140" fill="url(#g1)"/>
+            <rect x="190" y="120" width="20" height="180" rx="10" fill="#ffe9f2" opacity="0.6" />
+          </g>
+
+          <!-- subtle particle bubbles -->
+          <g id="bubbles">
+            <circle class="b" cx="70" cy="320" r="6" fill="#9be7ff" opacity="0.9"/>
+            <circle class="b" cx="330" cy="80" r="4" fill="#b7adff" opacity="0.85"/>
+            <circle class="b" cx="40" cy="60" r="5" fill="#b9f1ff" opacity="0.75"/>
+            <circle class="b" cx="360" cy="260" r="7" fill="#cfc3ff" opacity="0.65"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- subtle mouse parallax layers -->
+    <div id="parallax-layers" aria-hidden="true">
+      <div class="layer l1"></div>
+      <div class="layer l2"></div>
+      <div class="layer l3"></div>
+    </div>
+  </header>
+
+  <!-- SYMPTOMS -->
+  <section id="symptoms" class="panel">
+    <div class="container">
+      <h3>Signs & Symptoms</h3>
+      <p class="intro">Common signs of pneumonia — use these as slide notes for the project.</p>
+      <div class="sym-grid">
+        <article class="sym-card tilt" data-tooltip="Bacterial & viral coughs">
+          <div class="icon">💨</div>
+          <h4>Cough (with phlegm)</h4>
+          <p>Persistent productive cough is common.</p>
+        </article>
+        <article class="sym-card tilt" data-tooltip="Fever often accompanies infection">
+          <div class="icon">🌡️</div>
+          <h4>Fever & Chills</h4>
+          <p>Temperature spikes and shaking chills.</p>
+        </article>
+        <article class="sym-card tilt" data-tooltip="Breathing effort increases">
+          <div class="icon">😮‍💨</div>
+          <h4>Shortness of Breath</h4>
+          <p>Difficulty breathing, quick shallow breaths.</p>
+        </article>
+        <article class="sym-card tilt" data-tooltip="Can include malaise, chest pain">
+          <div class="icon">💤</div>
+          <h4>Fatigue</h4>
+          <p>Low energy and muscle aches.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- CAUSE / TRANSMISSION -->
+  <section id="cause" class="panel alt">
+    <div class="container">
+      <h3>How someone gets it</h3>
+      <div class="cause-layout">
+        <div class="cause-text">
+          <p class="lead">Pneumonia can be caused by bacteria, viruses, or fungi. Most commonly spread via respiratory droplets.</p>
+          <ul class="dot-list">
+            <li>Airborne droplets from coughs and sneezes</li>
+            <li>Aspiration (inhaling food/liquid into lungs)</li>
+            <li>Secondary infection after a cold or flu</li>
+          </ul>
+        </div>
+
+        <div class="cause-visual">
+          <div class="transmission-chart">
+            <div class="t-bar" data-target="65"><span>Droplet</span></div>
+            <div class="t-bar" data-target="20"><span>Aspiration</span></div>
+            <div class="t-bar" data-target="15"><span>Other</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RISK + STATS -->
+  <section id="risk" class="panel">
+    <div class="container">
+      <h3>Who is most at risk</h3>
+      <p class="intro">Interactive risk bars — hover for details. (Replace numbers with real stats later.)</p>
+
+      <div class="risk-grid">
+        <div class="risk-item">
+          <div class="risk-bar-wrap">
+            <div class="risk-bar" data-percent="85"><span>Children (under 5)</span></div>
+          </div>
+          <p class="small">Higher risk due to developing immune systems.</p>
+        </div>
+
+        <div class="risk-item">
+          <div class="risk-bar-wrap">
+            <div class="risk-bar" data-percent="78"><span>Elderly (65+)</span></div>
+          </div>
+          <p class="small">Aging immune response and comorbidities.</p>
+        </div>
+
+        <div class="risk-item">
+          <div class="risk-bar-wrap">
+            <div class="risk-bar" data-percent="60"><span>Immunocompromised</span></div>
+          </div>
+          <p class="small">Including chronic illness and certain meds.</p>
+        </div>
+      </div>
+
+      <div class="mini-quiz">
+        <h4>Quick check: Myth or Fact?</h4>
+        <div class="quiz-options">
+          <button class="quiz-btn" data-answer="fact">You can prevent pneumonia with vaccines</button>
+          <button class="quiz-btn" data-answer="fact">Only elderly get pneumonia</button>
+        </div>
+        <div class="quiz-feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIAGNOSIS -->
+  <section id="diagnosis" class="panel alt">
+    <div class="container">
+      <h3>Diagnosis</h3>
+      <div class="diag-grid">
+        <div class="diag-card">
+          <h4>Clinical Exam</h4>
+          <p>Physician listens to lungs (crackles, wheeze).</p>
+        </div>
+        <div class="diag-card">
+          <h4>Chest X-ray</h4>
+          <p>Imaging to locate areas of consolidation.</p>
+        </div>
+        <div class="diag-card">
+          <h4>Lab Tests</h4>
+          <p>Blood tests, sputum cultures to find causative agent.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TREATMENT / PREVENTION -->
+  <section id="treatment" class="panel">
+    <div class="container">
+      <h3>Treatment & Prevention</h3>
+      <div class="treat-grid">
+        <div class="treat-card">
+          <h4>Antibiotics</h4>
+          <p>Used for bacterial pneumonia.</p>
+        </div>
+        <div class="treat-card">
+          <h4>Antivirals / Antifungals</h4>
+          <p>When viral or fungal causes are identified.</p>
+        </div>
+        <div class="treat-card">
+          <h4>Vaccines</h4>
+          <p>Pneumococcal & influenza vaccines reduce risk.</p>
+        </div>
+      </div>
+
+      <div class="breathing-demo">
+        <h4>Breathing Exercise Demo</h4>
+        <div class="breathing-wrap">
+          <div id="breathing-circle" class="breathing-circle" aria-hidden="true"></div>
+          <p class="breathing-instruction">Click "Breathing Demo" in the hero to start the guided inhale/exhale.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXTRAS (History / Future / Personal) -->
+  <section id="extras" class="panel alt">
+    <div class="container">
+      <h3>History & The Future</h3>
+      <p class="lead">Add historical facts, social impact, and emerging treatments here.</p>
+
+      <div class="accordion">
+        <button class="acc-btn">History →</button>
+        <div class="acc-panel">
+          <p>Placeholder for the history of pneumonia — penicillin-era reductions, vaccine milestones, etc.</p>
+        </div>
+
+        <button class="acc-btn">The Future →</button>
+        <div class="acc-panel">
+          <p>Placeholder for new diagnostics, vaccines, and research directions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CITATIONS -->
+  <footer id="citations" class="panel">
+    <div class="container">
+      <h3>Citations</h3>
+      <ul class="citation-list">
+        <li><a href="#" target="_blank" rel="noopener">Placeholder source — add Mayo Clinic / CDC link here (MLA format)</a></li>
+        <li><a href="#" target="_blank" rel="noopener">Placeholder source — add second source here</a></li>
+      </ul>
+      <p class="small">Explain why these sources are trustworthy in your final slide/content.</p>
+      <p class="credit">Built with ♥ — Ready for Vercel</p>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script src="js/main.js" defer></script>
+</body>
+</html>
