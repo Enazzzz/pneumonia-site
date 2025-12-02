@@ -19,9 +19,28 @@
   <!-- GSAP + Plugins (local files - all free) -->
   <!-- Note: ScrollSmoother is a Club GreenSock plugin (paid). We use free alternatives. -->
   <!-- Files downloaded to js/libs/ - see js/libs/README.md for download instructions -->
+  <!-- Load synchronously (no defer) to ensure GSAP is available before modules -->
   <script src="js/libs/gsap.min.js"></script>
   <script src="js/libs/ScrollTrigger.min.js"></script>
   <script src="js/libs/ScrollToPlugin.min.js"></script>
+  <script>
+    // Verify GSAP loaded (helps debug if files are missing)
+    if (typeof gsap !== 'undefined') {
+      console.log('✅ GSAP core loaded');
+    } else {
+      console.error('❌ GSAP core failed to load - check js/libs/gsap.min.js');
+    }
+    if (typeof ScrollTrigger !== 'undefined') {
+      console.log('✅ ScrollTrigger loaded');
+    } else {
+      console.error('❌ ScrollTrigger failed to load - check js/libs/ScrollTrigger.min.js');
+    }
+    if (typeof ScrollToPlugin !== 'undefined') {
+      console.log('✅ ScrollToPlugin loaded');
+    } else {
+      console.warn('⚠️ ScrollToPlugin not loaded (optional for smooth scrolling)');
+    }
+  </script>
 </head>
 <body class="smooth">
   <!-- Skip to main content link (visible on keyboard focus for accessibility) -->
@@ -298,12 +317,13 @@
   </footer>
 
   <!-- SCRIPTS -->
-  <!-- Main initialization script (must load first) -->
-  <script src="js/main.js" defer></script>
-  <!-- Modular feature scripts (load after main.js) -->
+  <!-- Load order: GSAP libs → Modules → Main initialization -->
+  <!-- Modules initialize themselves, then main.js orchestrates everything -->
   <script src="js/modules/particles.js" defer></script>
   <script src="js/modules/parallax.js" defer></script>
   <script src="js/modules/breathing.js" defer></script>
   <script src="js/modules/quiz.js" defer></script>
+  <!-- Main script loads last to coordinate all features -->
+  <script src="js/main.js" defer></script>
 </body>
 </html>

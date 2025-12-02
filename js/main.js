@@ -76,32 +76,52 @@
    * Sets up all GSAP-based animations with ScrollTrigger for smooth reveals
    */
   function initGSAPAnimations() {
-    // Wait for GSAP to load
-    if (typeof gsap === 'undefined') {
-      console.warn('GSAP not loaded. Retrying in 100ms...');
-      setTimeout(initGSAPAnimations, 100);
-      return;
-    }
+    // Wait for GSAP to load (with retry logic)
+    let retries = 0;
+    const maxRetries = 10;
+    
+    function checkGSAP() {
+      if (typeof gsap === 'undefined') {
+        retries++;
+        if (retries < maxRetries) {
+          console.warn(`GSAP not loaded. Retrying... (${retries}/${maxRetries})`);
+          setTimeout(checkGSAP, 100);
+          return;
+        } else {
+          console.error('GSAP failed to load after multiple retries. Check network tab.');
+          return;
+        }
+      }
 
-    // Register GSAP plugins (all free)
-    if (typeof ScrollTrigger !== 'undefined') {
-      gsap.registerPlugin(ScrollTrigger);
-    }
-    if (typeof ScrollToPlugin !== 'undefined') {
-      gsap.registerPlugin(ScrollToPlugin);
+      // Register GSAP plugins (all free)
+      if (typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+        console.log('✅ ScrollTrigger registered');
+      } else {
+        console.warn('ScrollTrigger not loaded. Some scroll animations may not work.');
+      }
+      
+      if (typeof ScrollToPlugin !== 'undefined') {
+        gsap.registerPlugin(ScrollToPlugin);
+        console.log('✅ ScrollToPlugin registered');
+      }
+      
+      // Continue with animations
+      setupAnimations();
     }
     
-    if (typeof ScrollTrigger === 'undefined') {
-      console.warn('ScrollTrigger not loaded. Some scroll animations may not work.');
-      return;
-    }
+    function setupAnimations() {
+      if (typeof ScrollTrigger === 'undefined') {
+        console.warn('ScrollTrigger not available. Skipping scroll animations.');
+        return;
+      }
 
-    const reducedMotion = prefersReducedMotion();
+      const reducedMotion = prefersReducedMotion();
 
-    // ============================================
-    // HERO INTRO ANIMATIONS
-    // ============================================
-    if (!reducedMotion) {
+      // ============================================
+      // HERO INTRO ANIMATIONS
+      // ============================================
+      if (!reducedMotion) {
       // Create master timeline for hero
       const heroTimeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
       
@@ -264,8 +284,13 @@
       });
     });
 
-    // Refresh ScrollTrigger after all animations are set up
-    ScrollTrigger.refresh();
+      // Refresh ScrollTrigger after all animations are set up
+      ScrollTrigger.refresh();
+      console.log('✅ GSAP animations initialized');
+    }
+    
+    // Start checking for GSAP
+    checkGSAP();
   }
 
   /**
@@ -487,19 +512,11 @@
    */
   function init() {
     // Initialize core features
+    console.log('🚀 Initializing pneumonia site...');
     initProgressBar();
     
-    // Wait a bit for GSAP to fully load, then initialize animations
-    if (typeof gsap !== 'undefined') {
-      initGSAPAnimations();
-    } else {
-      // Retry after a short delay
-      setTimeout(() => {
-        if (typeof gsap !== 'undefined') {
-          initGSAPAnimations();
-        }
-      }, 100);
-    }
+    // Initialize GSAP animations (with built-in retry logic)
+    initGSAPAnimations();
     
     initCardTilt();
     initAccordion();
@@ -517,12 +534,21 @@
         quiz: typeof window.quizSystem !== 'undefined'
       };
       
-      console.log('✅ Initialization complete. Modules loaded:', modules);
+      const allLoaded = Object.values(modules).every(loaded => loaded === true);
+      
+      if (allLoaded) {
+        console.log('✅ All modules loaded successfully:', modules);
+      } else {
+        console.warn('⚠️ Some modules not loaded:', modules);
+      }
       
       // Refresh ScrollTrigger after everything is set up
       if (typeof ScrollTrigger !== 'undefined') {
         ScrollTrigger.refresh();
+        console.log('✅ ScrollTrigger refreshed');
       }
+      
+      console.log('🎉 Site initialization complete!');
     }, 500);
   }
 
