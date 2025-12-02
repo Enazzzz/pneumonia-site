@@ -313,27 +313,24 @@ p {
    NAVIGATION
    ============================================================================ */
 
-#topnav {
-  position: fixed;
-  top: var(--space-2);
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(96%, var(--max-width));
-  height: var(--nav-height);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-2) var(--space-4);
-  gap: var(--space-2);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
-  border-radius: var(--radius-xl);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  box-shadow: var(--shadow-md);
-  z-index: var(--z-fixed);
-  flex-wrap: wrap;        /* Allows multiple rows if needed */
-  transition: all var(--transition-base);
-}
+  #topnav {
+    position: fixed;
+    top: var(--space-2);
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-flex;      /* Inline-flex allows width to shrink/grow with content */
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-4);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+    border-radius: var(--radius-xl);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    box-shadow: var(--shadow-md);
+    z-index: var(--z-fixed);
+    white-space: nowrap;       /* Prevent wrapping inside the nav */
+  }
+  
 
 #topnav .brand {
   font-weight: var(--font-weight-bold);
@@ -343,7 +340,7 @@ p {
 
 #topnav ul {
   display: flex;
-  flex-wrap: wrap;        /* Wrap the list as a block if needed */
+  flex-wrap: nowrap;        /* Wrap the list as a block if needed */
   gap: var(--space-3);
   list-style: none;
   margin: 0;
@@ -1119,6 +1116,10 @@ p {
   color: var(--text-secondary);
   margin: 0;
 }
+.acc-panel.open {
+  max-height: 1000px; /* or something large to fit content */
+  padding: 1rem;
+}
 
 /* ============================================================================
    CITATIONS / FOOTER
@@ -1651,4 +1652,44 @@ a:not(.btn):hover {
   .panel {
     page-break-inside: avoid;
   }
+}
+
+
+/* ============================================================================ */
+/* CUSTOM CURSOR */
+/* ============================================================================ */
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(50, 50, 50, 0.8);
+  background: rgba(50,50,50,0.8); /* filled color */
+  pointer-events: none;
+  transform: translate(-50%, -50%); /* centers on mouse */
+  transition: transform 0.15s ease, border-color 0.2s ease, width 0.2s, height 0.2s;
+  z-index: 9999;
+}
+
+.custom-cursor.hover {
+  border-color: #fff;
+  transform: translate(-50%, -50%) scale(1.4); /* stays centered when scaling */
+}
+
+.custom-cursor.clicked {
+  transform: translate(-50%, -50%) scale(0.8); /* stays centered when shrinking */
+}
+
+/* Hide native cursor everywhere */
+* {
+  cursor: none !important;
+}
+
+/* Optional: allow text input to still show caret */
+input,
+textarea,
+select {
+  cursor: text !important; /* keep typing cursor if needed */
 }

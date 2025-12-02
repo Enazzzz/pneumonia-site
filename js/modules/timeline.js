@@ -14,7 +14,7 @@
   'use strict';
 
   /**
-   * Create timeline entry
+   * Create a timeline entry HTML string
    */
   function createTimelineEntry(year, title, description, icon = '📅') {
     return `
@@ -36,56 +36,34 @@
    * Initialize timeline
    */
   function init() {
-    const timelineContainer = document.getElementById('timeline-container');
-    if (!timelineContainer) {
+    const container = document.getElementById('timeline-container');
+    if (!container) {
       console.warn('[TIMELINE] Timeline container not found');
       return;
     }
 
-    console.log('[TIMELINE] Initializing timeline...');
+    console.log('[TIMELINE] Initializing...');
 
-    // Example timeline data (replace with your research)
-    const timelineData = [
-      {
-        year: '1928',
-        title: 'Penicillin Discovery',
-        description: 'Alexander Fleming discovers penicillin, revolutionizing treatment of bacterial infections including pneumonia.',
-        icon: '💉'
-      },
-      {
-        year: '1940s',
-        title: 'Antibiotic Era',
-        description: 'Widespread use of antibiotics dramatically reduces pneumonia mortality rates.',
-        icon: '💊'
-      },
-      {
-        year: '1977',
-        title: 'First Pneumococcal Vaccine',
-        description: 'First pneumococcal polysaccharide vaccine approved for use.',
-        icon: '🛡️'
-      },
-      {
-        year: '2000',
-        title: 'PCV7 Introduction',
-        description: 'Pneumococcal conjugate vaccine (PCV7) introduced, providing better protection for children.',
-        icon: '💉'
-      },
-      {
-        year: '2020',
-        title: 'COVID-19 Impact',
-        description: 'Pandemic highlights importance of respiratory health and vaccination.',
-        icon: '🌍'
-      }
+    // Sample data (replace with real content)
+    const data = [
+      { year: '1928', title: 'Penicillin Discovery', description: 'Alexander Fleming discovers penicillin.', icon: '💉' },
+      { year: '1940s', title: 'Antibiotic Era', description: 'Widespread use of antibiotics reduces pneumonia mortality.', icon: '💊' },
+      { year: '1977', title: 'First Pneumococcal Vaccine', description: 'Approved for use.', icon: '🛡️' },
+      { year: '2000', title: 'PCV7 Introduction', description: 'Better protection for children.', icon: '💉' },
+      { year: '2020', title: 'COVID-19 Impact', description: 'Pandemic highlights respiratory health importance.', icon: '🌍' }
     ];
 
-    // Populate timeline
-    timelineContainer.innerHTML = timelineData.map(entry => 
-      createTimelineEntry(entry.year, entry.title, entry.description, entry.icon)
-    ).join('');
+    // Populate container
+    container.innerHTML = data.map(d => createTimelineEntry(d.year, d.title, d.description, d.icon)).join('');
 
-    // Animate entries on scroll
-    const entries = timelineContainer.querySelectorAll('.timeline-entry');
+    const entries = container.querySelectorAll('.timeline-entry');
+
+    // Animate entries safely
     entries.forEach((entry, index) => {
+      // Make sure entry is visible immediately
+      entry.style.opacity = '1';
+
+      // Scroll-triggered GSAP animation (optional)
       if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         gsap.from(entry, {
           scrollTrigger: {
@@ -102,29 +80,25 @@
         });
       }
 
-      // Add hover effect
+      // Hover scale effect
       entry.addEventListener('mouseenter', () => {
         if (typeof gsap !== 'undefined') {
-          gsap.to(entry, {
-            scale: 1.02,
-            duration: 0.3,
-            ease: 'power2.out'
-          });
+          gsap.to(entry, { scale: 1.02, duration: 0.3, ease: 'power2.out' });
         }
       });
-
       entry.addEventListener('mouseleave', () => {
         if (typeof gsap !== 'undefined') {
-          gsap.to(entry, {
-            scale: 1,
-            duration: 0.3,
-            ease: 'power2.out'
-          });
+          gsap.to(entry, { scale: 1, duration: 0.3, ease: 'power2.out' });
         }
       });
     });
 
     console.log(`[TIMELINE] ✅ Initialized with ${entries.length} entries`);
+
+    // Refresh ScrollTrigger after everything is set
+    if (typeof ScrollTrigger !== 'undefined') {
+      ScrollTrigger.refresh();
+    }
   }
 
   // Initialize when DOM is ready
@@ -134,11 +108,7 @@
     setTimeout(init, 500);
   }
 
-  // Export for external use
-  window.timelineSystem = {
-    createEntry: createTimelineEntry,
-    init: init
-  };
+  // Expose for external use
+  window.timelineSystem = { createEntry: createTimelineEntry, init: init };
 
 })();
-

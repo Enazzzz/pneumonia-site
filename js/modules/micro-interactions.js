@@ -234,6 +234,24 @@
       document.body.appendChild(dot);
     });
   }
+  function initAccordion() {
+    const accBtns = document.querySelectorAll('.acc-btn');
+    accBtns.forEach(btn => {
+      const panel = document.getElementById(btn.getAttribute('aria-controls'));
+      btn.addEventListener('click', () => {
+        const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', !isExpanded);
+        if (!isExpanded) {
+          panel.style.display = 'block';
+          panel.style.maxHeight = panel.scrollHeight + 'px';
+        } else {
+          panel.style.maxHeight = '0';
+          setTimeout(() => panel.style.display = 'none', 300);
+        }
+      });
+    });
+  }
+
 
   /**
    * Initialize all micro-interactions
@@ -246,8 +264,10 @@
     initListAnimations();
     initIconAnimations();
     initMagneticCards();
+    initAccordion(); // ← Add this line here
     // initCursorTrail(); // Uncomment if you want cursor trail
-    
+    initAccordionFix(); // call after DOM is ready
+
     console.log('[MICRO-INTERACTIONS] ✅ Initialized');
   }
 

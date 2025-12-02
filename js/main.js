@@ -549,6 +549,43 @@
     log('✅ Accordion initialized');
   }
 
+
+  function initAccordionFix() {
+    const accButtons = document.querySelectorAll('.acc-btn');
+  
+    accButtons.forEach((btn) => {
+      const panel = btn.nextElementSibling;
+  
+      // Ensure panels start hidden but visible
+      panel.style.display = 'none';
+      panel.style.maxHeight = '0';
+      panel.style.opacity = '1'; // force visible
+      panel.style.transition = 'max-height 0.3s ease, opacity 0.3s ease';
+      panel.style.overflow = 'hidden';
+  
+      btn.addEventListener('click', () => {
+        const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+  
+        // Close all panels (accordion behavior)
+        accButtons.forEach((b) => b.setAttribute('aria-expanded', 'false'));
+        document.querySelectorAll('.acc-panel').forEach((p) => {
+          p.style.maxHeight = '0';
+          p.style.display = 'none';
+        });
+  
+        // Toggle current panel
+        if (!isExpanded) {
+          btn.setAttribute('aria-expanded', 'true');
+          panel.style.display = 'block';
+          panel.style.maxHeight = panel.scrollHeight + 'px';
+        }
+      });
+    });
+  }
+  
+  // Initialize after DOM ready
+  document.addEventListener('DOMContentLoaded', initAccordionFix);
+  
   /**
    * SMOOTH ANCHOR SCROLLING
    * Now handled by js/modules/smooth-scroll.js
