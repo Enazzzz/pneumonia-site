@@ -324,13 +324,14 @@ p {
   align-items: center;
   justify-content: space-between;
   padding: var(--space-2) var(--space-4);
-  gap: var(--space-3);
+  gap: var(--space-2);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
   border-radius: var(--radius-xl);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   box-shadow: var(--shadow-md);
   z-index: var(--z-fixed);
+  flex-wrap: wrap;        /* Allows multiple rows if needed */
   transition: all var(--transition-base);
 }
 
@@ -342,6 +343,7 @@ p {
 
 #topnav ul {
   display: flex;
+  flex-wrap: wrap;        /* Wrap the list as a block if needed */
   gap: var(--space-3);
   list-style: none;
   margin: 0;
@@ -357,6 +359,7 @@ p {
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
   display: block;
+  white-space: nowrap;    /* No text wrapping inside a link */
 }
 
 #topnav a:hover,
