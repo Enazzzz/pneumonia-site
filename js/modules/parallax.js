@@ -80,10 +80,23 @@
    * Initialize parallax system
    */
   function init() {
-    if (checkReducedMotion()) {
-      isActive = false;
+    if (!hero) {
+      console.warn('[PARALLAX] Hero element not found');
       return;
     }
+
+    if (layers.length === 0) {
+      console.warn('[PARALLAX] No parallax layers found');
+      return;
+    }
+
+    if (checkReducedMotion()) {
+      isActive = false;
+      console.log('[PARALLAX] Disabled (reduced motion preference)');
+      return;
+    }
+
+    console.log(`[PARALLAX] Initializing with ${layers.length} layers`);
 
     // Use pointer events for better touch support
     hero.addEventListener('pointermove', handlePointerMove, { passive: true });
@@ -91,13 +104,15 @@
 
     // Start animation loop
     updateParallax();
+    console.log('[PARALLAX] ✅ Initialized');
   }
 
   // Initialize when DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
-    init();
+    // Wait a bit to ensure elements are in DOM
+    setTimeout(init, 100);
   }
 
   // Handle reduced motion preference changes

@@ -201,6 +201,12 @@
    * Initialize particle system
    */
   function init() {
+    if (!canvas) {
+      console.warn('[PARTICLES] Canvas element not found');
+      return;
+    }
+
+    console.log('[PARTICLES] Initializing particle system...');
     initCanvas();
     createParticles();
     lastTime = performance.now();
@@ -209,13 +215,16 @@
     // Mouse tracking for interaction
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('resize', handleResize, { passive: true });
+    
+    console.log(`[PARTICLES] ✅ Initialized with ${particleCount} particles`);
   }
 
   // Initialize when DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
-    init();
+    // Wait a bit to ensure canvas is in DOM
+    setTimeout(init, 100);
   }
 
   // Export for potential external control

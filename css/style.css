@@ -622,6 +622,9 @@ p {
   height: 100%;
   z-index: -1;
   pointer-events: none;
+  /* Ensure canvas is visible and has dimensions */
+  display: block;
+  opacity: 1;
 }
 
 /* ============================================================================

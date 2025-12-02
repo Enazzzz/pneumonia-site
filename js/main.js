@@ -30,6 +30,18 @@
   const qs = (selector) => document.querySelector(selector);
   const qsa = (selector) => Array.from(document.querySelectorAll(selector));
 
+  // Debug mode - set to false in production
+  const DEBUG = true;
+  function log(...args) {
+    if (DEBUG) console.log('[MAIN]', ...args);
+  }
+  function warn(...args) {
+    if (DEBUG) console.warn('[MAIN]', ...args);
+  }
+  function error(...args) {
+    console.error('[MAIN]', ...args);
+  }
+
   /**
    * Check if user prefers reduced motion
    */
@@ -38,12 +50,56 @@
   }
 
   /**
+   * Wait for element to exist in DOM
+   */
+  function waitForElement(selector, maxWait = 2000) {
+    return new Promise((resolve, reject) => {
+      const element = qs(selector);
+      if (element) {
+        resolve(element);
+        return;
+      }
+
+      const startTime = Date.now();
+      const observer = new MutationObserver(() => {
+        const element = qs(selector);
+        if (element) {
+          observer.disconnect();
+          resolve(element);
+        } else if (Date.now() - startTime > maxWait) {
+          observer.disconnect();
+          reject(new Error(`Element ${selector} not found after ${maxWait}ms`));
+        }
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+
+      // Check again after a short delay
+      setTimeout(() => {
+        const element = qs(selector);
+        if (element) {
+          observer.disconnect();
+          resolve(element);
+        }
+      }, 100);
+    });
+  }
+
+  /**
    * SCROLL PROGRESS BAR
    * Updates the top progress bar in real-time as user scrolls
    */
   function initProgressBar() {
     const progress = qs('#progress');
-    if (!progress) return;
+    if (!progress) {
+      warn('Progress bar element not found');
+      return;
+    }
+
+    log('Initializing progress bar');
 
     function updateProgress() {
       const h = document.documentElement;
@@ -69,6 +125,7 @@
 
     window.addEventListener('scroll', onScroll, { passive: true });
     updateProgress(); // Initial update
+    log('✅ Progress bar initialized');
   }
 
   /**
@@ -78,32 +135,34 @@
   function initGSAPAnimations() {
     // Wait for GSAP to load (with retry logic)
     let retries = 0;
-    const maxRetries = 10;
+    const maxRetries = 20;
     
     function checkGSAP() {
       if (typeof gsap === 'undefined') {
         retries++;
         if (retries < maxRetries) {
-          console.warn(`GSAP not loaded. Retrying... (${retries}/${maxRetries})`);
+          warn(`GSAP not loaded. Retrying... (${retries}/${maxRetries})`);
           setTimeout(checkGSAP, 100);
           return;
         } else {
-          console.error('GSAP failed to load after multiple retries. Check network tab.');
+          error('GSAP failed to load after multiple retries. Check network tab.');
           return;
         }
       }
 
+      log('GSAP core loaded, registering plugins...');
+
       // Register GSAP plugins (all free)
       if (typeof ScrollTrigger !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);
-        console.log('✅ ScrollTrigger registered');
+        log('✅ ScrollTrigger registered');
       } else {
-        console.warn('ScrollTrigger not loaded. Some scroll animations may not work.');
+        warn('ScrollTrigger not loaded. Some scroll animations may not work.');
       }
       
       if (typeof ScrollToPlugin !== 'undefined') {
         gsap.registerPlugin(ScrollToPlugin);
-        console.log('✅ ScrollToPlugin registered');
+        log('✅ ScrollToPlugin registered');
       }
       
       // Continue with animations
@@ -112,181 +171,228 @@
     
     function setupAnimations() {
       if (typeof ScrollTrigger === 'undefined') {
-        console.warn('ScrollTrigger not available. Skipping scroll animations.');
+        warn('ScrollTrigger not available. Skipping scroll animations.');
         return;
       }
 
       const reducedMotion = prefersReducedMotion();
+      if (reducedMotion) {
+        log('⚠️ Reduced motion preference detected - animations will be minimal');
+      }
 
       // ============================================
       // HERO INTRO ANIMATIONS
       // ============================================
       if (!reducedMotion) {
-      // Create master timeline for hero
-      const heroTimeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
-      
-      heroTimeline
-        .from('#hero .hero-text h1', {
-          y: 30,
-          opacity: 0,
-          duration: 0.8
-        })
-        .from('#hero .sub', {
-          y: 18,
-          opacity: 0,
-          duration: 0.9
-        }, '-=0.7')
-        .from('#hero .lead', {
-          y: 18,
-          opacity: 0,
-          duration: 0.9
-        }, '-=0.8')
-        .from('#hero .hero-cta', {
-          y: 20,
-          opacity: 0,
-          duration: 0.8
-        }, '-=0.7')
-        .from('#hero .hero-art', {
-          scale: 0.92,
-          opacity: 0,
-          duration: 1,
-          ease: 'elastic.out(1, 0.5)'
-        }, '-=0.9');
-    }
+        const heroTitle = qs('#hero .hero-text h1');
+        const heroSub = qs('#hero .sub');
+        const heroLead = qs('#hero .lead');
+        const heroCta = qs('#hero .hero-cta');
+        const heroArt = qs('#hero .hero-art');
 
-    // ============================================
-    // LUNGS SVG BUBBLES ANIMATION
-    // ============================================
-    qsa('#bubbles .b, #bubbles circle').forEach((bubble, i) => {
-      if (reducedMotion) {
-        bubble.style.opacity = '0.75';
+        if (heroTitle && heroSub && heroLead && heroCta && heroArt) {
+          log('Setting up hero intro animations');
+          
+          // Create master timeline for hero
+          const heroTimeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
+          
+          heroTimeline
+            .from(heroTitle, {
+              y: 30,
+              opacity: 0,
+              duration: 0.8
+            })
+            .from(heroSub, {
+              y: 18,
+              opacity: 0,
+              duration: 0.9
+            }, '-=0.7')
+            .from(heroLead, {
+              y: 18,
+              opacity: 0,
+              duration: 0.9
+            }, '-=0.8')
+            .from(heroCta, {
+              y: 20,
+              opacity: 0,
+              duration: 0.8
+            }, '-=0.7')
+            .from(heroArt, {
+              scale: 0.92,
+              opacity: 0,
+              duration: 1,
+              ease: 'elastic.out(1, 0.5)'
+            }, '-=0.9');
+          
+          log('✅ Hero intro animations set up');
+        } else {
+          warn('Hero elements not found for animations');
+        }
+      }
+
+      // ============================================
+      // LUNGS SVG BUBBLES ANIMATION
+      // ============================================
+      const bubbles = qsa('#bubbles .b, #bubbles circle');
+      if (bubbles.length > 0) {
+        log(`Setting up ${bubbles.length} bubble animations`);
+        bubbles.forEach((bubble, i) => {
+          if (reducedMotion) {
+            bubble.style.opacity = '0.75';
+          } else {
+            gsap.to(bubble, {
+              y: -30 - Math.random() * 40,
+              x: (Math.random() - 0.5) * 40,
+              duration: 4 + Math.random() * 4,
+              yoyo: true,
+              repeat: -1,
+              ease: 'sine.inOut',
+              delay: i * 0.2
+            });
+          }
+        });
+        log('✅ Bubble animations set up');
       } else {
-        gsap.to(bubble, {
-          y: -30 - Math.random() * 40,
-          x: (Math.random() - 0.5) * 40,
-          duration: 4 + Math.random() * 4,
+        warn('No bubbles found for animation');
+      }
+
+      // ============================================
+      // LUNGS BREATHING ANIMATION (Continuous Loop)
+      // ============================================
+      const leftLung = qs('.lung.left');
+      const rightLung = qs('.lung.right');
+      if (leftLung && rightLung && !reducedMotion) {
+        log('Setting up lungs breathing animation');
+        gsap.to([leftLung, rightLung], {
+          scaleY: 0.92,
           yoyo: true,
           repeat: -1,
+          duration: 3.6,
           ease: 'sine.inOut',
-          delay: i * 0.2
+          transformOrigin: 'center center',
+          delay: 1.0
         });
+        log('✅ Lungs breathing animation set up');
+      } else if (!leftLung || !rightLung) {
+        warn('Lung elements not found');
       }
-    });
 
-    // ============================================
-    // LUNGS BREATHING ANIMATION (Continuous Loop)
-    // ============================================
-    const leftLung = qs('.lung.left');
-    const rightLung = qs('.lung.right');
-    if (leftLung && rightLung && !reducedMotion) {
-      gsap.to([leftLung, rightLung], {
-        scaleY: 0.92,
-        yoyo: true,
-        repeat: -1,
-        duration: 3.6,
-        ease: 'sine.inOut',
-        transformOrigin: 'center center',
-        delay: 1.0
-      });
-    }
-
-    // ============================================
-    // SCROLL-TRIGGERED SECTION REVEALS
-    // ============================================
-    qsa('.panel .container > h2, .panel .container > h3').forEach((heading) => {
-      if (reducedMotion) {
-        heading.style.opacity = '1';
-      } else {
-        gsap.from(heading, {
-          scrollTrigger: {
-            trigger: heading,
-            start: 'top 85%',
-            toggleActions: 'play none none none',
-            once: true // Only animate once
-          },
-          y: 24,
-          opacity: 0,
-          duration: 0.7,
-          ease: 'power3.out'
+      // ============================================
+      // SCROLL-TRIGGERED SECTION REVEALS
+      // ============================================
+      const headings = qsa('.panel .container > h2, .panel .container > h3');
+      if (headings.length > 0) {
+        log(`Setting up ${headings.length} heading animations`);
+        headings.forEach((heading) => {
+          if (reducedMotion) {
+            heading.style.opacity = '1';
+          } else {
+            gsap.from(heading, {
+              scrollTrigger: {
+                trigger: heading,
+                start: 'top 85%',
+                toggleActions: 'play none none none',
+                once: true
+              },
+              y: 24,
+              opacity: 0,
+              duration: 0.7,
+              ease: 'power3.out'
+            });
+          }
         });
+        log('✅ Heading animations set up');
       }
-    });
 
-    // ============================================
-    // STAGGERED CARD REVEALS
-    // ============================================
-    const cardGroups = [
-      { selector: '.sym-card', stagger: 0.1 },
-      { selector: '.diag-card', stagger: 0.08 },
-      { selector: '.treat-card', stagger: 0.08 },
-      { selector: '.risk-item', stagger: 0.1 }
-    ];
+      // ============================================
+      // STAGGERED CARD REVEALS
+      // ============================================
+      const cardGroups = [
+        { selector: '.sym-card', stagger: 0.1 },
+        { selector: '.diag-card', stagger: 0.08 },
+        { selector: '.treat-card', stagger: 0.08 },
+        { selector: '.risk-item', stagger: 0.1 }
+      ];
 
-    cardGroups.forEach(({ selector, stagger }) => {
-      const cards = qsa(selector);
-      if (cards.length === 0) return;
-
-      if (reducedMotion) {
-        cards.forEach(card => card.style.opacity = '1');
-      } else {
-        gsap.from(cards, {
-          scrollTrigger: {
-            trigger: cards[0]?.closest('.panel') || cards[0],
-            start: 'top 85%',
-            toggleActions: 'play none none none',
-            once: true
-          },
-          y: 20,
-          opacity: 0,
-          duration: 0.7,
-          stagger: stagger,
-          ease: 'power3.out'
-        });
-      }
-    });
-
-    // ============================================
-    // TRANSMISSION BARS ANIMATION
-    // ============================================
-    qsa('.t-bar').forEach((bar) => {
-      const target = parseInt(bar.getAttribute('data-target') || 50);
-      
-      ScrollTrigger.create({
-        trigger: bar,
-        start: 'top 90%',
-        once: true,
-        onEnter: () => {
-          // Set CSS variable for width animation
-          bar.style.setProperty('--target-width', `${target}%`);
-          bar.classList.add('animated');
+      cardGroups.forEach(({ selector, stagger }) => {
+        const cards = qsa(selector);
+        if (cards.length > 0) {
+          log(`Setting up ${cards.length} ${selector} animations`);
+          if (reducedMotion) {
+            cards.forEach(card => card.style.opacity = '1');
+          } else {
+            gsap.from(cards, {
+              scrollTrigger: {
+                trigger: cards[0]?.closest('.panel') || cards[0],
+                start: 'top 85%',
+                toggleActions: 'play none none none',
+                once: true
+              },
+              y: 20,
+              opacity: 0,
+              duration: 0.7,
+              stagger: stagger,
+              ease: 'power3.out'
+            });
+          }
+          log(`✅ ${selector} animations set up`);
         }
       });
-    });
 
-    // ============================================
-    // RISK BARS ANIMATION
-    // ============================================
-    qsa('.risk-bar').forEach((bar) => {
-      const percent = parseInt(bar.getAttribute('data-percent') || 50);
-      
-      ScrollTrigger.create({
-        trigger: bar,
-        start: 'top 90%',
-        once: true,
-        onEnter: () => {
-          // Animate width with GSAP for smoothness
-          gsap.to(bar, {
-            width: `${percent}%`,
-            duration: 1.2,
-            ease: 'power2.out'
+      // ============================================
+      // TRANSMISSION BARS ANIMATION
+      // ============================================
+      const tBars = qsa('.t-bar');
+      if (tBars.length > 0) {
+        log(`Setting up ${tBars.length} transmission bar animations`);
+        tBars.forEach((bar) => {
+          const target = parseInt(bar.getAttribute('data-target') || 50);
+          
+          ScrollTrigger.create({
+            trigger: bar,
+            start: 'top 90%',
+            once: true,
+            onEnter: () => {
+              // Set CSS variable for width animation
+              bar.style.setProperty('--target-width', `${target}%`);
+              bar.classList.add('animated');
+              log(`Transmission bar animated to ${target}%`);
+            }
           });
-        }
-      });
-    });
+        });
+        log('✅ Transmission bar animations set up');
+      }
+
+      // ============================================
+      // RISK BARS ANIMATION
+      // ============================================
+      const riskBars = qsa('.risk-bar');
+      if (riskBars.length > 0) {
+        log(`Setting up ${riskBars.length} risk bar animations`);
+        riskBars.forEach((bar) => {
+          const percent = parseInt(bar.getAttribute('data-percent') || 50);
+          
+          ScrollTrigger.create({
+            trigger: bar,
+            start: 'top 90%',
+            once: true,
+            onEnter: () => {
+              // Animate width with GSAP for smoothness
+              gsap.to(bar, {
+                width: `${percent}%`,
+                duration: 1.2,
+                ease: 'power2.out'
+              });
+              log(`Risk bar animated to ${percent}%`);
+            }
+          });
+        });
+        log('✅ Risk bar animations set up');
+      }
 
       // Refresh ScrollTrigger after all animations are set up
       ScrollTrigger.refresh();
-      console.log('✅ GSAP animations initialized');
+      log('✅ GSAP animations initialized and ScrollTrigger refreshed');
     }
     
     // Start checking for GSAP
@@ -298,9 +404,20 @@
    * Adds 3D tilt effect to cards on mouse/pointer movement
    */
   function initCardTilt() {
-    if (prefersReducedMotion()) return;
+    if (prefersReducedMotion()) {
+      log('Skipping card tilt (reduced motion)');
+      return;
+    }
 
-    qsa('.tilt').forEach((card) => {
+    const tiltCards = qsa('.tilt');
+    if (tiltCards.length === 0) {
+      warn('No tilt cards found');
+      return;
+    }
+
+    log(`Setting up ${tiltCards.length} card tilt effects`);
+
+    tiltCards.forEach((card) => {
       card.addEventListener('pointermove', (e) => {
         const rect = card.getBoundingClientRect();
         const x = (e.clientX - rect.left) / rect.width - 0.5;
@@ -319,6 +436,8 @@
         card.style.transform = '';
       });
     });
+
+    log('✅ Card tilt effects initialized');
   }
 
   /**
@@ -326,7 +445,15 @@
    * Handles expand/collapse of accordion panels with smooth animations
    */
   function initAccordion() {
-    qsa('.acc-btn').forEach((btn) => {
+    const accButtons = qsa('.acc-btn');
+    if (accButtons.length === 0) {
+      warn('No accordion buttons found');
+      return;
+    }
+
+    log(`Setting up ${accButtons.length} accordion panels`);
+
+    accButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
         const panel = btn.nextElementSibling;
         const isExpanded = btn.getAttribute('aria-expanded') === 'true';
@@ -357,6 +484,8 @@
         }
       });
     });
+
+    log('✅ Accordion initialized');
   }
 
   /**
@@ -364,7 +493,15 @@
    * Implements smooth, momentum-like scrolling with easing
    */
   function initSmoothScrolling() {
-    qsa('a[href^="#"]').forEach((link) => {
+    const anchorLinks = qsa('a[href^="#"]');
+    if (anchorLinks.length === 0) {
+      warn('No anchor links found');
+      return;
+    }
+
+    log(`Setting up smooth scrolling for ${anchorLinks.length} links`);
+
+    anchorLinks.forEach((link) => {
       link.addEventListener('click', (e) => {
         const href = link.getAttribute('href');
         if (href === '#' || href === '#!') return;
@@ -398,6 +535,8 @@
         }
       });
     });
+
+    log('✅ Smooth scrolling initialized');
   }
 
   /**
@@ -408,7 +547,12 @@
     const toggle = qs('#mobile-menu-toggle');
     const nav = qs('#topnav ul');
     
-    if (!toggle || !nav) return;
+    if (!toggle || !nav) {
+      warn('Mobile menu elements not found');
+      return;
+    }
+
+    log('Setting up mobile menu');
 
     toggle.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -456,6 +600,8 @@
         }
       }
     });
+
+    log('✅ Mobile menu initialized');
   }
 
   /**
@@ -467,7 +613,12 @@
     const leftLung = qs('.lung.left');
     const rightLung = qs('.lung.right');
 
-    if (!lungs || !leftLung || !rightLung) return;
+    if (!lungs || !leftLung || !rightLung) {
+      warn('Lungs SVG elements not found');
+      return;
+    }
+
+    log('Setting up interactive lungs');
 
     lungs.addEventListener('click', () => {
       if (prefersReducedMotion()) return;
@@ -488,22 +639,7 @@
 
     // Add cursor pointer to indicate interactivity
     lungs.style.cursor = 'pointer';
-  }
-
-  /**
-   * ENHANCE SECTION VISUAL SEPARATION
-   * Adds subtle animations and visual effects to sections
-   */
-  function initSectionEnhancements() {
-    if (prefersReducedMotion()) return;
-
-    // Add hover effects to panels
-    qsa('.panel').forEach((panel, index) => {
-      // Alternate background gradients for visual separation
-      if (index % 2 === 0) {
-        panel.style.background = 'radial-gradient(1200px 600px at 10% 10%, rgba(123,97,255,0.08), transparent 8%), radial-gradient(1000px 500px at 90% 90%, rgba(123,231,255,0.04), transparent 8%), var(--bg-900)';
-      }
-    });
+    log('✅ Interactive lungs initialized');
   }
 
   /**
@@ -511,19 +647,20 @@
    * Initializes all features when DOM is ready
    */
   function init() {
+    log('🚀 Initializing pneumonia site...');
+    
     // Initialize core features
-    console.log('🚀 Initializing pneumonia site...');
     initProgressBar();
     
     // Initialize GSAP animations (with built-in retry logic)
     initGSAPAnimations();
     
+    // Initialize interactive features
     initCardTilt();
     initAccordion();
     initSmoothScrolling();
     initMobileMenu();
     initLungsInteraction();
-    initSectionEnhancements();
 
     // Verify all modules are loaded
     setTimeout(() => {
@@ -537,19 +674,19 @@
       const allLoaded = Object.values(modules).every(loaded => loaded === true);
       
       if (allLoaded) {
-        console.log('✅ All modules loaded successfully:', modules);
+        log('✅ All modules loaded successfully:', modules);
       } else {
-        console.warn('⚠️ Some modules not loaded:', modules);
+        warn('⚠️ Some modules not loaded:', modules);
       }
       
       // Refresh ScrollTrigger after everything is set up
       if (typeof ScrollTrigger !== 'undefined') {
         ScrollTrigger.refresh();
-        console.log('✅ ScrollTrigger refreshed');
+        log('✅ ScrollTrigger refreshed');
       }
       
-      console.log('🎉 Site initialization complete!');
-    }, 500);
+      log('🎉 Site initialization complete!');
+    }, 1000);
   }
 
   // Initialize when DOM is ready
@@ -562,7 +699,7 @@
 
   // Handle reduced motion preference changes
   window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', () => {
-    console.log('Motion preference changed. Reloading animations...');
+    log('Motion preference changed. Reloading animations...');
     // Refresh ScrollTrigger
     if (typeof ScrollTrigger !== 'undefined') {
       ScrollTrigger.refresh();
