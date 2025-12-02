@@ -114,6 +114,41 @@
   --z-fixed: 300;
   --z-modal: 400;
   --z-tooltip: 500;
+  --z-cursor: 10000;
+}
+
+/* ============================================================================
+   LIGHT THEME (when data-theme="light")
+   ============================================================================ */
+
+[data-theme="light"],
+.light-theme {
+  --bg-900: #f8fafc;
+  --bg-800: #f1f5f9;
+  --bg-700: #e2e8f0;
+  --card: rgba(0, 0, 0, 0.03);
+  --glass: rgba(0, 0, 0, 0.03);
+  --glass-strong: rgba(0, 0, 0, 0.06);
+  
+  --text-primary: #0f1724;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  
+  /* Keep accent colors vibrant */
+  --accent-1: #7b61ff;
+  --accent-2: #0ea5e9;
+  --accent-3: #06b6d4;
+  
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 6px 24px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.25);
+  --shadow-glow: 0 8px 24px rgba(123, 97, 255, 0.2);
+}
+
+/* Smooth theme transition */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 /* ============================================================================
@@ -1263,6 +1298,370 @@ p {
   .bubble {
     animation: none;
   }
+}
+
+/* ============================================================================
+   THEME TOGGLE BUTTON
+   ============================================================================ */
+
+.theme-toggle {
+  background: var(--glass);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.theme-toggle:hover {
+  background: var(--glass-strong);
+  transform: scale(1.05);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--accent-1);
+  outline-offset: 2px;
+}
+
+/* ============================================================================
+   CUSTOM CURSOR
+   ============================================================================ */
+
+.custom-cursor,
+.custom-cursor-follower {
+  position: fixed;
+  pointer-events: none;
+  z-index: var(--z-cursor);
+  mix-blend-mode: difference;
+  transition: transform 0.1s ease-out, opacity 0.3s ease;
+}
+
+.custom-cursor {
+  width: 8px;
+  height: 8px;
+  background: var(--accent-2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+}
+
+.custom-cursor-follower {
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--accent-2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: transform 0.15s ease-out, width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+}
+
+.custom-cursor.hover,
+.custom-cursor-follower.hover {
+  width: 48px;
+  height: 48px;
+  border-width: 3px;
+}
+
+/* Hide on touch devices */
+@media (pointer: coarse) {
+  .custom-cursor,
+  .custom-cursor-follower {
+    display: none;
+  }
+  
+  body {
+    cursor: auto !important;
+  }
+}
+
+/* ============================================================================
+   NAVIGATION ACTIVE STATE
+   ============================================================================ */
+
+#topnav a.active {
+  color: var(--accent-2);
+  background: linear-gradient(90deg, rgba(123, 231, 255, 0.12), transparent);
+  position: relative;
+}
+
+#topnav a.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: var(--space-3);
+  right: var(--space-3);
+  height: 2px;
+  background: var(--accent-2);
+  border-radius: 2px 2px 0 0;
+}
+
+/* ============================================================================
+   TIMELINE COMPONENT
+   ============================================================================ */
+
+.timeline-container {
+  position: relative;
+  padding: var(--space-6) 0;
+  margin: var(--space-6) 0;
+}
+
+.timeline-entry {
+  display: flex;
+  gap: var(--space-5);
+  margin-bottom: var(--space-8);
+  position: relative;
+  opacity: 0;
+}
+
+.timeline-marker {
+  position: relative;
+  flex-shrink: 0;
+  width: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.timeline-icon {
+  width: 50px;
+  height: 50px;
+  background: var(--glass);
+  border: 2px solid var(--accent-2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xl);
+  z-index: 2;
+  position: relative;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  transition: all var(--transition-base);
+}
+
+.timeline-entry:hover .timeline-icon {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-glow);
+  background: var(--glass-strong);
+}
+
+.timeline-line {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  width: 2px;
+  height: calc(100% + var(--space-8));
+  background: linear-gradient(180deg, var(--accent-2), transparent);
+  transform: translateX(-50%);
+}
+
+.timeline-entry:last-child .timeline-line {
+  display: none;
+}
+
+.timeline-content {
+  flex: 1;
+  padding-top: var(--space-2);
+}
+
+.timeline-year {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--accent-2);
+  margin-bottom: var(--space-1);
+}
+
+.timeline-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.timeline-description {
+  color: var(--text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+.timeline-milestones {
+  margin-top: var(--space-8);
+}
+
+.timeline-milestones h3 {
+  margin-bottom: var(--space-4);
+}
+
+/* ============================================================================
+   CHARTS
+   ============================================================================ */
+
+.chart-container {
+  background: var(--glass);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  margin: var(--space-5) 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chart-container-spacing {
+  margin-bottom: var(--space-6);
+}
+
+.chart-container canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ============================================================================
+   FLIP CARD EFFECTS
+   ============================================================================ */
+
+.flip-card {
+  background-color: transparent;
+  perspective: 1000px;
+  width: 100%;
+  height: 200px;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+}
+
+/* ============================================================================
+   DEPTH EFFECTS & SHADOWS
+   ============================================================================ */
+
+.card-depth {
+  position: relative;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.card-depth::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(135deg, var(--accent-2), var(--accent-1));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.card-depth:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-xl);
+}
+
+.card-depth:hover::before {
+  opacity: 1;
+}
+
+/* ============================================================================
+   MICRO-INTERACTIONS & ANIMATIONS
+   ============================================================================ */
+
+/* Ripple effect for buttons */
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Fade out for cursor trail */
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+  }
+}
+
+/* Smooth text reveal */
+.text-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.text-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Magnetic card effect */
+.magnetic {
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Link glow effect */
+a:not(.btn):hover {
+  text-shadow: 0 0 8px rgba(123, 231, 255, 0.5);
+  transition: text-shadow 0.3s ease;
+}
+
+/* ============================================================================
+   ACCORDION ENHANCEMENTS
+   ============================================================================ */
+
+.acc-source {
+  margin-top: var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.acc-list {
+  margin-top: var(--space-2);
+  padding-left: var(--space-5);
+}
+
+.acc-list li {
+  margin-bottom: var(--space-2);
+  line-height: var(--line-height-relaxed);
 }
 
 /* ============================================================================

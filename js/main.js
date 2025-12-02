@@ -21,6 +21,11 @@
  * - js/modules/parallax.js (mouse parallax effects)
  * - js/modules/breathing.js (4-7-8 breathing exercise demo)
  * - js/modules/quiz.js (interactive quiz with feedback)
+ * - js/modules/theme-toggle.js (dark/light mode toggle)
+ * - js/modules/charts.js (interactive charts)
+ * - js/modules/timeline.js (animated timeline)
+ * - js/modules/custom-cursor.js (custom cursor effects)
+ * - js/modules/nav-highlights.js (scroll-based nav highlighting)
  */
 
 (function() {
@@ -490,53 +495,32 @@
 
   /**
    * SMOOTH ANCHOR SCROLLING
-   * Implements smooth, momentum-like scrolling with easing
+   * Now handled by js/modules/smooth-scroll.js
+   * This function is kept for backwards compatibility but delegates to the module
    */
   function initSmoothScrolling() {
-    const anchorLinks = qsa('a[href^="#"]');
-    if (anchorLinks.length === 0) {
-      warn('No anchor links found');
-      return;
-    }
-
-    log(`Setting up smooth scrolling for ${anchorLinks.length} links`);
-
-    anchorLinks.forEach((link) => {
-      link.addEventListener('click', (e) => {
-        const href = link.getAttribute('href');
-        if (href === '#' || href === '#!') return;
-
-        const target = document.querySelector(href);
-        if (target) {
-          e.preventDefault();
-          const navOffset = 72; // Account for fixed nav
-          const targetPosition = target.getBoundingClientRect().top + window.scrollY - navOffset;
-          
-          // Use GSAP ScrollToPlugin for smooth momentum scrolling
-          if (typeof gsap !== 'undefined' && typeof ScrollToPlugin !== 'undefined') {
-            gsap.to(window, {
-              scrollTo: {
-                y: targetPosition,
-                autoKill: false
-              },
-              duration: 1.2,
-              ease: 'power2.inOut'
-            });
-          } else {
-            // Fallback to native smooth scroll
-            window.scrollTo({
-              top: targetPosition,
-              behavior: 'smooth'
-            });
+    // Smooth scrolling is now handled by the dedicated module
+    // Just verify it's loaded
+    if (typeof window.smoothScroll !== 'undefined') {
+      log('✅ Smooth scrolling module loaded');
+    } else {
+      warn('Smooth scrolling module not found - using fallback');
+      // Fallback implementation
+      const anchorLinks = qsa('a[href^="#"]');
+      anchorLinks.forEach((link) => {
+        link.addEventListener('click', (e) => {
+          const href = link.getAttribute('href');
+          if (href === '#' || href === '#!') return;
+          const target = document.querySelector(href);
+          if (target) {
+            e.preventDefault();
+            const targetPosition = target.getBoundingClientRect().top + window.scrollY - 72;
+            window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+            history.pushState(null, null, href);
           }
-
-          // Update URL without triggering scroll
-          history.pushState(null, null, href);
-        }
+        });
       });
-    });
-
-    log('✅ Smooth scrolling initialized');
+    }
   }
 
   /**
@@ -665,10 +649,15 @@
     // Verify all modules are loaded
     setTimeout(() => {
       const modules = {
-        particles: typeof window.particleSystem !== 'undefined',
-        parallax: typeof window.parallaxSystem !== 'undefined',
-        breathing: typeof window.breathingDemo !== 'undefined',
-        quiz: typeof window.quizSystem !== 'undefined'
+        particles: typeof window.initParticles === 'function' || typeof window.particleSystem !== 'undefined',
+        parallax: typeof window.initParallax === 'function' || typeof window.parallaxSystem !== 'undefined',
+        breathing: typeof window.initBreathing === 'function' || typeof window.breathingDemo !== 'undefined',
+        quiz: typeof window.initQuiz === 'function' || typeof window.quizSystem !== 'undefined',
+        theme: typeof window.themeSystem !== 'undefined',
+        charts: typeof window.chartSystem !== 'undefined',
+        timeline: typeof window.timelineSystem !== 'undefined',
+        cursor: document.querySelector('.custom-cursor') !== null,
+        navHighlights: true // nav-highlights doesn't expose a global
       };
       
       const allLoaded = Object.values(modules).every(loaded => loaded === true);

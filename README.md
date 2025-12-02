@@ -34,8 +34,11 @@ pneumonia-site/
 │       ├── breathing.js   # 4-7-8 breathing exercise demo
 │       └── quiz.js        # Interactive quiz functionality
 ├── assets/
+│   ├── fonts/             # Local font files (download Inter font)
+│   │   └── README.md      # Font download instructions
 │   ├── svg/
-│   │   └── lungs.svg      # Animated lungs illustration
+│   │   ├── lungs.svg      # Basic lungs illustration
+│   │   └── lungs-enhanced.svg  # Enhanced version with more detail
 │   └── img/               # Placeholder images (add your own)
 ├── data/
 │   └── citations.md       # MLA citation examples and guide
@@ -287,16 +290,25 @@ Run these tests to verify accessibility:
 
 ---
 
-## 🎬 GSAP & ScrollSmoother
+## 🎬 GSAP & Smooth Scrolling
 
 ### Current Setup
 
-The site uses **GSAP** (free) and **ScrollTrigger** (free) via CDN. These are loaded in `index.html`:
+The site uses **GSAP** (free) and **ScrollTrigger** (free) from local files in `js/libs/`:
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+<script src="js/libs/gsap.min.js"></script>
+<script src="js/libs/ScrollTrigger.min.js"></script>
+<script src="js/libs/ScrollToPlugin.min.js"></script>
 ```
+
+### Smooth Scrolling
+
+**Smooth scrolling is implemented** using GSAP ScrollToPlugin (free) in `js/modules/smooth-scroll.js`. Features:
+- Momentum-like easing (`power2.inOut`)
+- Accounts for fixed navigation
+- Respects `prefers-reduced-motion`
+- Fallback to native smooth scroll
 
 ### ScrollSmoother (Optional, Paid)
 
