@@ -75,12 +75,33 @@
         const target = document.querySelector(href);
         if (target) {
           e.preventDefault();
-          smoothScrollTo(target, { offset: 72 });
+          
+          // Immediate scroll start - no delay
+          const targetPosition = target.getBoundingClientRect().top + window.scrollY - 72;
+          
+          // Start scroll immediately
+          if (typeof gsap !== 'undefined' && typeof ScrollToPlugin !== 'undefined') {
+            gsap.to(window, {
+              scrollTo: {
+                y: targetPosition,
+                autoKill: false
+              },
+              duration: prefersReducedMotion ? 0.3 : 1.2,
+              ease: 'power2.inOut',
+              immediateRender: true // Start immediately
+            });
+          } else {
+            // Fallback - instant start
+            window.scrollTo({
+              top: targetPosition,
+              behavior: 'smooth'
+            });
+          }
           
           // Update URL without triggering scroll
           history.pushState(null, null, href);
         }
-      });
+      }, { passive: false });
     });
 
     console.log('[SMOOTH-SCROLL] ✅ Initialized');

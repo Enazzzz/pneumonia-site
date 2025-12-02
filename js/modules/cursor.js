@@ -36,11 +36,11 @@
   let currentElement = null;
 
   /**
-   * Create subtle cursor element
+   * Create simple white cursor element
    */
   function createCursor() {
     cursor = document.createElement('div');
-    cursor.className = 'subtle-cursor';
+    cursor.className = 'simple-cursor';
     cursor.setAttribute('aria-hidden', 'true');
     document.body.appendChild(cursor);
   }
@@ -89,10 +89,11 @@
       currentElement.style.filter = 'brightness(1.15)';
     }
     
-    // Show cursor affordance
+    // Show cursor affordance - brighter and slightly transparent
     if (cursor) {
       cursor.classList.add('interactive');
-      cursor.style.opacity = '1';
+      cursor.style.opacity = '0.85'; // Slightly transparent
+      cursor.style.filter = 'brightness(1.5)'; // Brighter
     }
   }
 
@@ -105,10 +106,11 @@
       currentElement = null;
     }
     
-    // Hide cursor affordance
+    // Hide cursor affordance - return to default
     if (cursor) {
       cursor.classList.remove('interactive');
-      cursor.style.opacity = '0.3';
+      cursor.style.opacity = '1';
+      cursor.style.filter = 'brightness(1)';
     }
   }
 
@@ -151,10 +153,13 @@
     });
 
     document.addEventListener('mouseenter', () => {
-      if (cursor) cursor.style.opacity = isHovering ? '1' : '0.3';
+      if (cursor) {
+        cursor.style.opacity = isHovering ? '0.85' : '1';
+        cursor.style.filter = isHovering ? 'brightness(1.5)' : 'brightness(1)';
+      }
     });
 
-    console.log('[CURSOR] ✅ Subtle cursor initialized');
+    console.log('[CURSOR] ✅ Simple white cursor initialized');
   }
 
   // Initialize when DOM is ready

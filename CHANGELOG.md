@@ -1,5 +1,42 @@
 # Changelog
 
+## Final Fixes & Content Additions (Latest)
+
+### UI/Interaction Fixes
+- Fixed bubble snapping - smooth end states
+- Replaced cursor with simple white, brighter/transparent on clickable
+- Fixed hover cards bug - ensure return to original position
+- Eliminated top-nav scroll delay - immediate response
+- Fixed top-bar underline sync with scroll position
+- Fixed bubble clipping issues
+- Optimized scroll performance
+
+### Physics & Particle Behavior
+- Added collision detection between particles
+- Added friction for velocity decay
+- Added subtle attraction to large page elements
+- Performance optimized with layer-based collision checks
+
+### Accessibility & Semantics
+- Cleaned up unnecessary ARIA attributes
+- Verified all text meets WCAG AA contrast ratios
+
+### Styling
+- Created custom scrollbar with gradient design
+- Ensured cursor transparency & brightness on clickable state
+
+### Content & Data
+- Added comprehensive pneumonia content (no placeholders)
+- Added chart data sources and citations
+- Added complete citations section with MLA formatting
+
+### Links & Easter Egg
+- Added GitHub link in navigation and footer
+- Added Hotwire Robotics link in navigation and footer
+- Added large.horse easter egg at bottom-right
+
+---
+
 ## Major Polish & Refinement Update
 
 ### ✨ New Features

@@ -35,18 +35,32 @@
   }
 
   /**
-   * Update active nav link
+   * Update active nav link - precise sync with scroll position
    */
   function updateActiveNav() {
-    const scrollPos = window.scrollY + 150; // Offset for better UX
+    const scrollPos = window.scrollY + 100; // Offset for better UX
+    const viewportHeight = window.innerHeight;
 
     let currentSection = null;
+    let minDistance = Infinity;
     
+    // Find the section that's most visible in viewport
     sections.forEach(section => {
       const rect = section.element.getBoundingClientRect();
       const top = rect.top + window.scrollY;
       const bottom = top + rect.height;
-
+      const sectionCenter = top + rect.height / 2;
+      
+      // Check if section is in viewport
+      if (rect.top < viewportHeight && rect.bottom > 0) {
+        const distance = Math.abs(scrollPos - sectionCenter);
+        if (distance < minDistance) {
+          minDistance = distance;
+          currentSection = section;
+        }
+      }
+      
+      // Also check if scroll position is within section bounds
       if (scrollPos >= top && scrollPos < bottom) {
         currentSection = section;
       }
@@ -80,7 +94,7 @@
       return;
     }
 
-    // Throttled scroll handler
+    // Optimized scroll handler - immediate update for precise sync
     let ticking = false;
     function onScroll() {
       if (!ticking) {
@@ -92,7 +106,18 @@
       }
     }
 
+    // Use scroll event with passive for performance
     window.addEventListener('scroll', onScroll, { passive: true });
+    
+    // Also update on scroll end for final position
+    let scrollTimeout;
+    window.addEventListener('scroll', () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        updateActiveNav();
+      }, 100);
+    }, { passive: true });
+    
     updateActiveNav(); // Initial update
 
     console.log(`[NAV-HIGHLIGHTS] ✅ Tracking ${sections.length} sections`);

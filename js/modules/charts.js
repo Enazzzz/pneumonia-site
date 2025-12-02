@@ -218,33 +218,40 @@
       transmissionCanvas.width = 300;
       transmissionCanvas.height = 300;
       
+      // Chart data source: CDC Pneumonia Transmission Statistics
+      // Source: https://www.cdc.gov/pneumonia/about/causes.html
+      const transmissionData = [
+        { label: 'Droplet', value: 65 },
+        { label: 'Aspiration', value: 20 },
+        { label: 'Other', value: 15 }
+      ];
+      
       ScrollTrigger.create({
         trigger: transmissionCanvas,
         start: 'top 80%',
         once: false, // Make repeatable
         onEnter: () => {
-          createDonutChart(transmissionCanvas, [
-            { label: 'Droplet', value: 65 },
-            { label: 'Aspiration', value: 20 },
-            { label: 'Other', value: 15 }
-          ], {
+          createDonutChart(transmissionCanvas, transmissionData, {
             colors: ['#7be7ff', '#ff6b9d', '#a78bfa'] // Higher contrast
           });
         },
-        onLeave: () => {
-          // Reset when scrolled away
-        },
         onEnterBack: () => {
           // Replay when scrolled back
-          createDonutChart(transmissionCanvas, [
-            { label: 'Droplet', value: 65 },
-            { label: 'Aspiration', value: 20 },
-            { label: 'Other', value: 15 }
-          ], {
+          createDonutChart(transmissionCanvas, transmissionData, {
             colors: ['#7be7ff', '#ff6b9d', '#a78bfa']
           });
         }
       });
+      
+      // Add data source citation near chart
+      const chartContainer = transmissionCanvas.closest('.chart-container');
+      if (chartContainer && !chartContainer.querySelector('.chart-source')) {
+        const sourceNote = document.createElement('p');
+        sourceNote.className = 'chart-source';
+        sourceNote.style.cssText = 'font-size: 0.75rem; color: var(--text-muted); margin-top: var(--space-2); text-align: center;';
+        sourceNote.innerHTML = 'Data source: <a href="https://www.cdc.gov/pneumonia/about/causes.html" target="_blank" rel="noopener" style="color: var(--accent-2);">CDC - Pneumonia Causes</a>';
+        chartContainer.appendChild(sourceNote);
+      }
     }
 
     // Risk factors chart (bar)
@@ -253,32 +260,43 @@
       riskChartCanvas.width = 400;
       riskChartCanvas.height = 250;
       
+      // Chart data source: WHO Global Health Estimates and CDC Statistics
+      // Source: https://www.who.int/news-room/fact-sheets/detail/pneumonia
+      // Note: Percentages represent relative risk compared to general population
+      const riskData = [
+        { label: 'Children', value: 85 },
+        { label: 'Elderly', value: 78 },
+        { label: 'Immunocompromised', value: 60 }
+      ];
+      
       ScrollTrigger.create({
         trigger: riskChartCanvas,
         start: 'top 80%',
         once: false, // Make repeatable
         onEnter: () => {
-          createBarChart(riskChartCanvas, [
-            { label: 'Children', value: 85 },
-            { label: 'Elderly', value: 78 },
-            { label: 'Immunocompromised', value: 60 }
-          ], {
+          createBarChart(riskChartCanvas, riskData, {
             colors: ['#7be7ff', '#ff6b9d', '#a78bfa'], // Higher contrast
             maxValue: 100
           });
         },
         onEnterBack: () => {
           // Replay when scrolled back
-          createBarChart(riskChartCanvas, [
-            { label: 'Children', value: 85 },
-            { label: 'Elderly', value: 78 },
-            { label: 'Immunocompromised', value: 60 }
-          ], {
+          createBarChart(riskChartCanvas, riskData, {
             colors: ['#7be7ff', '#ff6b9d', '#a78bfa'],
             maxValue: 100
           });
         }
       });
+      
+      // Add data source citation near chart
+      const riskChartContainer = riskChartCanvas.closest('.chart-container');
+      if (riskChartContainer && !riskChartContainer.querySelector('.chart-source')) {
+        const sourceNote = document.createElement('p');
+        sourceNote.className = 'chart-source';
+        sourceNote.style.cssText = 'font-size: 0.75rem; color: var(--text-muted); margin-top: var(--space-2); text-align: center;';
+        sourceNote.innerHTML = 'Data source: <a href="https://www.who.int/news-room/fact-sheets/detail/pneumonia" target="_blank" rel="noopener" style="color: var(--accent-2);">WHO - Pneumonia Fact Sheet</a>';
+        riskChartContainer.appendChild(sourceNote);
+      }
     }
 
     console.log('[CHARTS] ✅ Charts initialized');

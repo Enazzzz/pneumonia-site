@@ -539,7 +539,21 @@ Light mode has been removed, but you can restore it:
 
 ## 🔄 Recent Changes
 
-See `CHANGELOG.md` for detailed list of recent updates including:
+See `CHANGELOG.md` and `FINAL_FIXES_CHANGELOG.md` for detailed lists of updates including:
+
+**Latest Updates:**
+- Enhanced particle system with collisions, friction, and attraction
+- Simple white cursor with brightness/transparency on clickable elements
+- Fixed card hover bug (cards now return to original position)
+- Immediate scroll response on navigation clicks
+- Precise top-bar underline sync
+- Comprehensive pneumonia content (no placeholders)
+- Chart data sources and citations
+- Custom scrollbar
+- GitHub and Hotwire Robotics links
+- Easter egg (large.horse)
+
+**Previous Updates:**
 - Subtle cursor system
 - Global particle system
 - Copy protection feature

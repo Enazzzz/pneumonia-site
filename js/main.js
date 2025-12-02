@@ -467,18 +467,27 @@
         }
       });
 
+      // Store original transform to ensure return to exact position
+      const originalTransform = window.getComputedStyle(card).transform;
+      
       card.addEventListener('pointerleave', () => {
         isHovered = false;
         
-        // Smooth revert to neutral
+        // Smooth revert to neutral - ensure return to original position
         if (typeof gsap !== 'undefined') {
           revertAnimation = gsap.to(card, {
             rotationX: 0,
             rotationY: 0,
             z: 0,
+            x: 0,
+            y: 0,
             duration: REVERT_DURATION,
             ease: REVERT_EASING,
-            transformPerspective: 900
+            transformPerspective: 900,
+            onComplete: () => {
+              // Ensure final state is exactly neutral
+              card.style.transform = '';
+            }
           });
         } else {
           card.style.transition = `transform ${REVERT_DURATION}s cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
@@ -720,7 +729,7 @@
         quiz: typeof window.initQuiz === 'function' || typeof window.quizSystem !== 'undefined',
         charts: typeof window.chartSystem !== 'undefined',
         timeline: typeof window.timelineSystem !== 'undefined',
-        cursor: document.querySelector('.subtle-cursor') !== null,
+        cursor: document.querySelector('.simple-cursor') !== null,
         navHighlights: true, // nav-highlights doesn't expose a global
         copyProtection: typeof window.disableCopyProtection === 'function'
       };
