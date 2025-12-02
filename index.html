@@ -3,56 +3,69 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pneumonia — Project</title>
+  <meta name="description" content="An interactive educational presentation about pneumonia: symptoms, transmission, diagnosis, treatment, and prevention." />
+  <title>Pneumonia — Interactive Research Project</title>
 
-  <!-- Google Font -->
+  <!-- Preconnect to Google Fonts for performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Preload critical font weights -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" as="style">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 
   <!-- CSS -->
   <link rel="stylesheet" href="css/style.css">
 
-  <!-- GSAP + ScrollTrigger -->
+  <!-- GSAP + ScrollTrigger (CDN for zero-build setup) -->
+  <!-- Note: ScrollSmoother is a Club GreenSock plugin (paid). See README for details. -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
 </head>
 <body class="smooth">
+  <!-- Skip to main content link (visible on keyboard focus for accessibility) -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
 
   <!-- PROGRESS BAR -->
   <div id="progress-wrap"><div id="progress"></div></div>
 
   <!-- NAV -->
-  <nav id="topnav">
-    <div class="brand">Pneumonia Project</div>
-    <ul>
-      <li><a href="#hero">Home</a></li>
-      <li><a href="#symptoms">Symptoms</a></li>
-      <li><a href="#cause">Transmission</a></li>
-      <li><a href="#risk">Risk & Stats</a></li>
-      <li><a href="#diagnosis">Diagnosis</a></li>
-      <li><a href="#treatment">Treatment</a></li>
-      <li><a href="#extras">Extras</a></li>
-      <li><a href="#citations">Citations</a></li>
+  <nav id="topnav" role="navigation" aria-label="Main navigation">
+    <div class="brand" aria-label="Pneumonia Project">Pneumonia Project</div>
+    <ul role="menubar">
+      <li role="none"><a href="#hero" role="menuitem">Home</a></li>
+      <li role="none"><a href="#symptoms" role="menuitem">Symptoms</a></li>
+      <li role="none"><a href="#cause" role="menuitem">Transmission</a></li>
+      <li role="none"><a href="#risk" role="menuitem">Risk & Stats</a></li>
+      <li role="none"><a href="#diagnosis" role="menuitem">Diagnosis</a></li>
+      <li role="none"><a href="#treatment" role="menuitem">Treatment</a></li>
+      <li role="none"><a href="#extras" role="menuitem">Extras</a></li>
+      <li role="none"><a href="#citations" role="menuitem">Citations</a></li>
     </ul>
+    <!-- Mobile menu toggle (hidden on desktop, shown via CSS on mobile) -->
+    <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="topnav">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
 
   <!-- HERO -->
-  <header id="hero" class="panel">
+  <header id="hero" class="panel" role="banner">
     <div class="hero-inner">
       <div class="hero-text">
         <h1>Pneumonia</h1>
         <h2 class="sub">What it is, how it spreads, and how we can prevent it</h2>
         <p class="lead">A concise, interactive walk-through. Scroll or move your mouse — things react.</p>
         <div class="hero-cta">
-          <a href="#symptoms" class="btn">Explore Symptoms</a>
-          <button id="play-breath" class="btn ghost">Breathing Demo</button>
+          <a href="#symptoms" class="btn" aria-label="Navigate to symptoms section">Explore Symptoms</a>
+          <button id="play-breath" class="btn ghost" aria-label="Start breathing exercise demonstration" aria-pressed="false">Breathing Demo</button>
         </div>
       </div>
 
       <div class="hero-art">
         <!-- Lungs SVG that will animate -->
-        <svg id="lungs" viewBox="0 0 400 400" aria-hidden="true">
+        <!-- TODO: Replace with your custom lungs SVG from assets/svg/lungs.svg if you have one -->
+        <svg id="lungs" viewBox="0 0 400 400" role="img" aria-label="Animated illustration of human lungs">
+          <title>Human Lungs Illustration</title>
+          <desc>An animated SVG illustration of human lungs that demonstrates breathing through subtle scale animations.</desc>
           <defs>
             <linearGradient id="g1" x1="0" x2="1">
               <stop offset="0%" stop-color="#8dd3ff"/>
@@ -84,58 +97,64 @@
       <div class="layer l1"></div>
       <div class="layer l2"></div>
       <div class="layer l3"></div>
+      <div class="bubble bubble-1"></div>
+      <div class="bubble bubble-2"></div>
+      <div class="bubble bubble-3"></div>
+      <canvas id="particle-bg"></canvas>
     </div>
   </header>
 
+  <!-- MAIN CONTENT -->
+  <main id="main-content" role="main">
   <!-- SYMPTOMS -->
-  <section id="symptoms" class="panel">
+  <section id="symptoms" class="panel" aria-labelledby="symptoms-heading">
     <div class="container">
-      <h3>Signs & Symptoms</h3>
-      <p class="intro">Common signs of pneumonia — use these as slide notes for the project.</p>
-      <div class="sym-grid">
-        <article class="sym-card tilt" data-tooltip="Bacterial & viral coughs">
-          <div class="icon">💨</div>
-          <h4>Cough (with phlegm)</h4>
-          <p>Persistent productive cough is common.</p>
+      <h2 id="symptoms-heading">Signs & Symptoms</h2>
+      <p class="intro"><!-- TODO: Replace with your research content about common pneumonia symptoms -->Common signs of pneumonia — use these as slide notes for the project.</p>
+      <div class="sym-grid" role="list">
+        <article class="sym-card tilt" data-tooltip="Bacterial & viral coughs" role="listitem" tabindex="0">
+          <div class="icon" aria-hidden="true">💨</div>
+          <h3>Cough (with phlegm)</h3>
+          <p><!-- TODO: Add MLA citation reference here -->Persistent productive cough is common.</p>
         </article>
-        <article class="sym-card tilt" data-tooltip="Fever often accompanies infection">
-          <div class="icon">🌡️</div>
-          <h4>Fever & Chills</h4>
-          <p>Temperature spikes and shaking chills.</p>
+        <article class="sym-card tilt" data-tooltip="Fever often accompanies infection" role="listitem" tabindex="0">
+          <div class="icon" aria-hidden="true">🌡️</div>
+          <h3>Fever & Chills</h3>
+          <p><!-- TODO: Add MLA citation reference here -->Temperature spikes and shaking chills.</p>
         </article>
-        <article class="sym-card tilt" data-tooltip="Breathing effort increases">
-          <div class="icon">😮‍💨</div>
-          <h4>Shortness of Breath</h4>
-          <p>Difficulty breathing, quick shallow breaths.</p>
+        <article class="sym-card tilt" data-tooltip="Breathing effort increases" role="listitem" tabindex="0">
+          <div class="icon" aria-hidden="true">😮‍💨</div>
+          <h3>Shortness of Breath</h3>
+          <p><!-- TODO: Add MLA citation reference here -->Difficulty breathing, quick shallow breaths.</p>
         </article>
-        <article class="sym-card tilt" data-tooltip="Can include malaise, chest pain">
-          <div class="icon">💤</div>
-          <h4>Fatigue</h4>
-          <p>Low energy and muscle aches.</p>
+        <article class="sym-card tilt" data-tooltip="Can include malaise, chest pain" role="listitem" tabindex="0">
+          <div class="icon" aria-hidden="true">💤</div>
+          <h3>Fatigue</h3>
+          <p><!-- TODO: Add MLA citation reference here -->Low energy and muscle aches.</p>
         </article>
       </div>
     </div>
   </section>
 
   <!-- CAUSE / TRANSMISSION -->
-  <section id="cause" class="panel alt">
+  <section id="cause" class="panel alt" aria-labelledby="cause-heading">
     <div class="container">
-      <h3>How someone gets it</h3>
+      <h2 id="cause-heading">How someone gets it</h2>
       <div class="cause-layout">
         <div class="cause-text">
-          <p class="lead">Pneumonia can be caused by bacteria, viruses, or fungi. Most commonly spread via respiratory droplets.</p>
-          <ul class="dot-list">
-            <li>Airborne droplets from coughs and sneezes</li>
-            <li>Aspiration (inhaling food/liquid into lungs)</li>
-            <li>Secondary infection after a cold or flu</li>
+          <p class="lead"><!-- TODO: Replace with your research content about transmission methods -->Pneumonia can be caused by bacteria, viruses, or fungi. Most commonly spread via respiratory droplets.</p>
+          <ul class="dot-list" role="list">
+            <li><!-- TODO: Add MLA citation reference -->Airborne droplets from coughs and sneezes</li>
+            <li><!-- TODO: Add MLA citation reference -->Aspiration (inhaling food/liquid into lungs)</li>
+            <li><!-- TODO: Add MLA citation reference -->Secondary infection after a cold or flu</li>
           </ul>
         </div>
 
-        <div class="cause-visual">
-          <div class="transmission-chart">
-            <div class="t-bar" data-target="65"><span>Droplet</span></div>
-            <div class="t-bar" data-target="20"><span>Aspiration</span></div>
-            <div class="t-bar" data-target="15"><span>Other</span></div>
+        <div class="cause-visual" aria-label="Transmission method statistics">
+          <div class="transmission-chart" role="img" aria-label="Bar chart showing transmission methods: Droplet 65%, Aspiration 20%, Other 15%">
+            <div class="t-bar" data-target="65" aria-label="Droplet transmission: 65%"><span>Droplet</span></div>
+            <div class="t-bar" data-target="20" aria-label="Aspiration transmission: 20%"><span>Aspiration</span></div>
+            <div class="t-bar" data-target="15" aria-label="Other transmission methods: 15%"><span>Other</span></div>
           </div>
         </div>
       </div>
@@ -143,129 +162,146 @@
   </section>
 
   <!-- RISK + STATS -->
-  <section id="risk" class="panel">
+  <section id="risk" class="panel" aria-labelledby="risk-heading">
     <div class="container">
-      <h3>Who is most at risk</h3>
-      <p class="intro">Interactive risk bars — hover for details. (Replace numbers with real stats later.)</p>
+      <h2 id="risk-heading">Who is most at risk</h2>
+      <p class="intro"><!-- TODO: Replace with your research content about risk factors -->Interactive risk bars — hover for details. (Replace numbers with real stats later.)</p>
 
-      <div class="risk-grid">
-        <div class="risk-item">
-          <div class="risk-bar-wrap">
-            <div class="risk-bar" data-percent="85"><span>Children (under 5)</span></div>
+      <div class="risk-grid" role="list">
+        <div class="risk-item" role="listitem">
+          <div class="risk-bar-wrap" aria-label="Risk level: 85%">
+            <div class="risk-bar" data-percent="85" aria-hidden="true"><span>Children (under 5)</span></div>
           </div>
-          <p class="small">Higher risk due to developing immune systems.</p>
+          <p class="small"><!-- TODO: Add MLA citation reference -->Higher risk due to developing immune systems.</p>
         </div>
 
-        <div class="risk-item">
-          <div class="risk-bar-wrap">
-            <div class="risk-bar" data-percent="78"><span>Elderly (65+)</span></div>
+        <div class="risk-item" role="listitem">
+          <div class="risk-bar-wrap" aria-label="Risk level: 78%">
+            <div class="risk-bar" data-percent="78" aria-hidden="true"><span>Elderly (65+)</span></div>
           </div>
-          <p class="small">Aging immune response and comorbidities.</p>
+          <p class="small"><!-- TODO: Add MLA citation reference -->Aging immune response and comorbidities.</p>
         </div>
 
-        <div class="risk-item">
-          <div class="risk-bar-wrap">
-            <div class="risk-bar" data-percent="60"><span>Immunocompromised</span></div>
+        <div class="risk-item" role="listitem">
+          <div class="risk-bar-wrap" aria-label="Risk level: 60%">
+            <div class="risk-bar" data-percent="60" aria-hidden="true"><span>Immunocompromised</span></div>
           </div>
-          <p class="small">Including chronic illness and certain meds.</p>
+          <p class="small"><!-- TODO: Add MLA citation reference -->Including chronic illness and certain meds.</p>
         </div>
       </div>
 
-      <div class="mini-quiz">
-        <h4>Quick check: Myth or Fact?</h4>
-        <div class="quiz-options">
-          <button class="quiz-btn" data-answer="fact">You can prevent pneumonia with vaccines</button>
-          <button class="quiz-btn" data-answer="fact">Only elderly get pneumonia</button>
+      <div class="mini-quiz" role="region" aria-labelledby="quiz-heading">
+        <h3 id="quiz-heading">Quick check: Myth or Fact?</h3>
+        <div class="quiz-options" role="group" aria-label="Quiz questions">
+          <button class="quiz-btn" data-answer="fact" data-correct="true" aria-describedby="quiz-feedback">You can prevent pneumonia with vaccines</button>
+          <button class="quiz-btn" data-answer="myth" data-correct="false" aria-describedby="quiz-feedback">Only elderly get pneumonia</button>
         </div>
-        <div class="quiz-feedback"></div>
+        <div id="quiz-feedback" class="quiz-feedback" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </div>
   </section>
 
   <!-- DIAGNOSIS -->
-  <section id="diagnosis" class="panel alt">
+  <section id="diagnosis" class="panel alt" aria-labelledby="diagnosis-heading">
     <div class="container">
-      <h3>Diagnosis</h3>
-      <div class="diag-grid">
-        <div class="diag-card">
-          <h4>Clinical Exam</h4>
-          <p>Physician listens to lungs (crackles, wheeze).</p>
+      <h2 id="diagnosis-heading">Diagnosis</h2>
+      <div class="diag-grid" role="list">
+        <div class="diag-card" role="listitem">
+          <h3>Clinical Exam</h3>
+          <p><!-- TODO: Add MLA citation reference -->Physician listens to lungs (crackles, wheeze).</p>
         </div>
-        <div class="diag-card">
-          <h4>Chest X-ray</h4>
-          <p>Imaging to locate areas of consolidation.</p>
+        <div class="diag-card" role="listitem">
+          <h3>Chest X-ray</h3>
+          <p><!-- TODO: Add MLA citation reference -->Imaging to locate areas of consolidation.</p>
         </div>
-        <div class="diag-card">
-          <h4>Lab Tests</h4>
-          <p>Blood tests, sputum cultures to find causative agent.</p>
+        <div class="diag-card" role="listitem">
+          <h3>Lab Tests</h3>
+          <p><!-- TODO: Add MLA citation reference -->Blood tests, sputum cultures to find causative agent.</p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- TREATMENT / PREVENTION -->
-  <section id="treatment" class="panel">
+  <section id="treatment" class="panel" aria-labelledby="treatment-heading">
     <div class="container">
-      <h3>Treatment & Prevention</h3>
-      <div class="treat-grid">
-        <div class="treat-card">
-          <h4>Antibiotics</h4>
-          <p>Used for bacterial pneumonia.</p>
+      <h2 id="treatment-heading">Treatment & Prevention</h2>
+      <div class="treat-grid" role="list">
+        <div class="treat-card" role="listitem">
+          <h3>Antibiotics</h3>
+          <p><!-- TODO: Add MLA citation reference -->Used for bacterial pneumonia.</p>
         </div>
-        <div class="treat-card">
-          <h4>Antivirals / Antifungals</h4>
-          <p>When viral or fungal causes are identified.</p>
+        <div class="treat-card" role="listitem">
+          <h3>Antivirals / Antifungals</h3>
+          <p><!-- TODO: Add MLA citation reference -->When viral or fungal causes are identified.</p>
         </div>
-        <div class="treat-card">
-          <h4>Vaccines</h4>
-          <p>Pneumococcal & influenza vaccines reduce risk.</p>
+        <div class="treat-card" role="listitem">
+          <h3>Vaccines</h3>
+          <p><!-- TODO: Add MLA citation reference -->Pneumococcal & influenza vaccines reduce risk.</p>
         </div>
       </div>
 
-      <div class="breathing-demo">
-        <h4>Breathing Exercise Demo</h4>
+      <div class="breathing-demo" role="region" aria-labelledby="breathing-heading">
+        <h3 id="breathing-heading">Breathing Exercise Demo</h3>
         <div class="breathing-wrap">
-          <div id="breathing-circle" class="breathing-circle" aria-hidden="true"></div>
-          <p class="breathing-instruction">Click "Breathing Demo" in the hero to start the guided inhale/exhale.</p>
+          <div id="breathing-circle" class="breathing-circle" aria-hidden="true" aria-label="Breathing visualization circle"></div>
+          <div class="breathing-controls">
+            <p id="breathing-instruction" class="breathing-instruction" role="status" aria-live="polite">Click "Breathing Demo" in the hero to start the guided 4-7-8 breathing exercise.</p>
+            <button id="breathing-toggle" class="btn ghost breathing-control-btn" aria-label="Toggle breathing exercise" aria-pressed="false">Stop Exercise</button>
+            <button id="breathing-mute" class="btn ghost breathing-control-btn" aria-label="Toggle audio cues" aria-pressed="false">🔊 Mute</button>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- EXTRAS (History / Future / Personal) -->
-  <section id="extras" class="panel alt">
+  <section id="extras" class="panel alt" aria-labelledby="extras-heading">
     <div class="container">
-      <h3>History & The Future</h3>
-      <p class="lead">Add historical facts, social impact, and emerging treatments here.</p>
+      <h2 id="extras-heading">History & The Future</h2>
+      <p class="lead"><!-- TODO: Replace with your research content -->Add historical facts, social impact, and emerging treatments here.</p>
 
-      <div class="accordion">
-        <button class="acc-btn">History →</button>
-        <div class="acc-panel">
-          <p>Placeholder for the history of pneumonia — penicillin-era reductions, vaccine milestones, etc.</p>
+      <div class="accordion" role="region" aria-label="Additional information">
+        <div class="acc-item">
+          <button id="acc-history-btn" class="acc-btn" aria-expanded="false" aria-controls="acc-history">History →</button>
+          <div id="acc-history" class="acc-panel" role="region" aria-labelledby="acc-history-btn">
+            <p><!-- TODO: Replace with your research content about pneumonia history -->Placeholder for the history of pneumonia — penicillin-era reductions, vaccine milestones, etc.</p>
+          </div>
         </div>
 
-        <button class="acc-btn">The Future →</button>
-        <div class="acc-panel">
-          <p>Placeholder for new diagnostics, vaccines, and research directions.</p>
+        <div class="acc-item">
+          <button id="acc-future-btn" class="acc-btn" aria-expanded="false" aria-controls="acc-future">The Future →</button>
+          <div id="acc-future" class="acc-panel" role="region" aria-labelledby="acc-future-btn">
+            <p><!-- TODO: Replace with your research content about future treatments -->Placeholder for new diagnostics, vaccines, and research directions.</p>
+          </div>
         </div>
       </div>
     </div>
   </section>
+  </main>
 
   <!-- CITATIONS -->
-  <footer id="citations" class="panel">
+  <footer id="citations" class="panel" role="contentinfo" aria-labelledby="citations-heading">
     <div class="container">
-      <h3>Citations</h3>
-      <ul class="citation-list">
-        <li><a href="#" target="_blank" rel="noopener">Placeholder source — add Mayo Clinic / CDC link here (MLA format)</a></li>
-        <li><a href="#" target="_blank" rel="noopener">Placeholder source — add second source here</a></li>
-      </ul>
-      <p class="small">Explain why these sources are trustworthy in your final slide/content.</p>
-      <p class="credit">Built with ♥ — Ready for Vercel</p>
+      <h2 id="citations-heading">Citations</h2>
+      <p class="intro"><!-- TODO: Replace with your explanation of source credibility -->All sources are from reputable medical institutions and peer-reviewed research. See <a href="data/citations.md">data/citations.md</a> for full MLA format examples.</p>
+      <ol class="citation-list" role="list">
+        <li><!-- TODO: Replace with your first MLA citation --><a href="#" target="_blank" rel="noopener noreferrer">Placeholder source — add Mayo Clinic / CDC link here (MLA format)</a></li>
+        <li><!-- TODO: Replace with your second MLA citation --><a href="#" target="_blank" rel="noopener noreferrer">Placeholder source — add second source here</a></li>
+        <!-- TODO: Add more citations as needed -->
+      </ol>
+      <p class="small"><!-- TODO: Replace with your explanation -->Explain why these sources are trustworthy in your final slide/content.</p>
+      <p class="credit">Built with ♥ — Ready for Vercel deployment</p>
     </div>
   </footer>
 
   <!-- SCRIPTS -->
+  <!-- Main initialization script (must load first) -->
   <script src="js/main.js" defer></script>
+  <!-- Modular feature scripts (load after main.js) -->
+  <script src="js/modules/particles.js" defer></script>
+  <script src="js/modules/parallax.js" defer></script>
+  <script src="js/modules/breathing.js" defer></script>
+  <script src="js/modules/quiz.js" defer></script>
 </body>
 </html>

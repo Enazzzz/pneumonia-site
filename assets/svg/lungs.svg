@@ -1,0 +1,72 @@
+<!--
+  LUNGS SVG ASSET
+  A clean, animated-ready SVG illustration of human lungs.
+  
+  Usage:
+  - Can be embedded directly in HTML or loaded as an image
+  - Designed to work with GSAP animations (scale, opacity, transform)
+  - Includes gradient definitions for visual appeal
+  - Accessible: includes <title> and <desc> for screen readers
+  
+  To customize:
+  - Edit gradient stops in <defs> to change colors
+  - Adjust viewBox if you want different proportions
+  - Modify paths/ellipses to change lung shape
+  - Add more detail (bronchi, alveoli) if desired
+-->
+
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="lungs-title lungs-desc">
+  <title id="lungs-title">Human Lungs Illustration</title>
+  <desc id="lungs-desc">An animated SVG illustration of human lungs that demonstrates breathing through subtle scale animations.</desc>
+  
+  <defs>
+    <!-- Gradient for lungs -->
+    <linearGradient id="lungGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8dd3ff" stop-opacity="1"/>
+      <stop offset="50%" stop-color="#7be7ff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#7b61ff" stop-opacity="0.8"/>
+    </linearGradient>
+    
+    <!-- Glow filter for depth -->
+    <filter id="lungGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.6 0" result="glow"/>
+      <feBlend in="SourceGraphic" in2="glow" mode="screen"/>
+    </filter>
+    
+    <!-- Gooey effect (optional, for more organic look) -->
+    <filter id="gooey" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
+      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo"/>
+    </filter>
+  </defs>
+  
+  <!-- Left Lung -->
+  <g class="lung left" transform-origin="140 200">
+    <ellipse cx="140" cy="200" rx="100" ry="140" fill="url(#lungGradient)" filter="url(#lungGlow)" opacity="0.9"/>
+    <!-- Bronchi (airway) -->
+    <path d="M 140 120 Q 130 100 120 80" stroke="#7be7ff" stroke-width="3" fill="none" opacity="0.6"/>
+    <path d="M 140 120 Q 150 100 160 80" stroke="#7be7ff" stroke-width="3" fill="none" opacity="0.6"/>
+  </g>
+  
+  <!-- Right Lung -->
+  <g class="lung right" transform-origin="260 200">
+    <ellipse cx="260" cy="200" rx="100" ry="140" fill="url(#lungGradient)" filter="url(#lungGlow)" opacity="0.9"/>
+    <!-- Bronchi (airway) -->
+    <path d="M 260 120 Q 250 100 240 80" stroke="#7be7ff" stroke-width="3" fill="none" opacity="0.6"/>
+    <path d="M 260 120 Q 270 100 280 80" stroke="#7be7ff" stroke-width="3" fill="none" opacity="0.6"/>
+  </g>
+  
+  <!-- Trachea (windpipe) connecting to both lungs -->
+  <rect x="190" y="80" width="20" height="200" rx="10" fill="#ffe9f2" opacity="0.6"/>
+  
+  <!-- Decorative bubbles (representing air/oxygen) -->
+  <g id="bubbles" opacity="0.75">
+    <circle class="bubble-1" cx="70" cy="320" r="6" fill="#9be7ff" opacity="0.9"/>
+    <circle class="bubble-2" cx="330" cy="80" r="4" fill="#b7adff" opacity="0.85"/>
+    <circle class="bubble-3" cx="40" cy="60" r="5" fill="#b9f1ff" opacity="0.75"/>
+    <circle class="bubble-4" cx="360" cy="260" r="7" fill="#cfc3ff" opacity="0.65"/>
+    <circle class="bubble-5" cx="200" cy="350" r="5" fill="#a8d8ff" opacity="0.7"/>
+  </g>
+</svg>
+
