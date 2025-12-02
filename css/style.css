@@ -255,7 +255,25 @@ p {
   width: 0;
   background: linear-gradient(90deg, var(--accent-2), var(--accent-1));
   box-shadow: var(--shadow-glow);
-  transition: width 0.1s linear;
+  transition: width 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+#progress::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 /* ============================================================================
@@ -352,10 +370,28 @@ p {
   display: flex;
   align-items: center;
   position: relative;
+  transition: background 0.3s ease;
 }
 
 .panel.alt {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), transparent);
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(123, 97, 255, 0.3), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.panel:hover::before {
+  opacity: 1;
 }
 
 /* ============================================================================
@@ -435,8 +471,12 @@ p {
 }
 
 .btn:hover {
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.02);
   box-shadow: 0 12px 32px rgba(123, 97, 255, 0.2);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.98);
 }
 
 .btn:active {
@@ -609,10 +649,11 @@ p {
 
 .sym-card:hover,
 .sym-card:focus {
-  transform: translateY(-8px) rotateX(2deg);
+  transform: translateY(-8px) rotateX(2deg) scale(1.02);
   box-shadow: var(--shadow-lg);
   outline: 2px solid var(--accent-1);
   outline-offset: 4px;
+  background: var(--glass-strong);
 }
 
 .sym-card .icon {
@@ -756,7 +797,8 @@ p {
 }
 
 .risk-item:hover {
-  transform: translateY(-4px);
+  transform: translateY(-4px) scale(1.01);
+  background: var(--glass-strong);
 }
 
 .risk-bar-wrap {
@@ -829,6 +871,7 @@ p {
   background: rgba(255, 255, 255, 0.03);
   color: var(--text-primary);
   border-color: rgba(255, 255, 255, 0.12);
+  transform: translateX(4px);
 }
 
 .quiz-btn:focus-visible {
@@ -884,8 +927,9 @@ p {
 
 .diag-card:hover,
 .treat-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-4px) scale(1.01);
   box-shadow: var(--shadow-md);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
 }
 
 .diag-card h3,
