@@ -2,7 +2,8 @@
 node_modules/
 package-lock.json
 yarn.lock
-
+PRESENTATION_QUICK_REFERENCE.md
+PRESENTATION_SCRIPT.md
 # Build outputs
 dist/
 build/
